@@ -28,7 +28,7 @@ app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpecs));
 
 app.listen(PORT, async () => {
   try {
-    await db.sequelize.sync();
+    await db.sequelize.sync(); // Sincroniza los modelos con la base de datos sin eliminar datos existentes
     console.log(`Base de datos conectada y sincronizada correctamente en el puerto ${PORT}.`);
   }
   catch (error) {

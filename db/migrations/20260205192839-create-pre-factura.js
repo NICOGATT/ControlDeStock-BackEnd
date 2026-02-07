@@ -1,4 +1,7 @@
 'use strict';
+
+const { allow } = require('joi');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -10,7 +13,15 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       fecha: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
+      },
+      clienteId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Clientes',
+          key: 'id'
+        },
       }
     });
   },
