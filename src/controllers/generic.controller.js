@@ -32,14 +32,7 @@ const getModelById = (Model) => async (req, res) => {
   return res.status(200).json(entity);
 };
 
-//6. Obtener registros por nombre
-const getModelByName = (Model) => async (req, res) => {
-  const { nombre } = req.params;
-  const entities = await Model.findAll({ where: { nombre } });
-  return res.status(200).json(entities);
-};
-
-//7. Obtener registros por atributo de body
+//6. Obtener registros por atributo de ruta
 const getModelByParam = (Model, attribute) => async (req, res) => {
   const value = req.params[attribute];
   const entities = await Model.findAll({ where: { [attribute]: value } });
@@ -52,6 +45,5 @@ module.exports = {
   deleteModel,
   getAllModels,
   getModelById,
-  getModelByName,
   getModelByParam
 };

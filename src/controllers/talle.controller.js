@@ -7,5 +7,5 @@ module.exports = {
   deleteTalle: genericController.deleteModel(Talle),
   getAllTalles: genericController.getAllModels(Talle),
   getTalleById: genericController.getModelById(Talle),
-  getTalleByName: genericController.getModelByName(Talle),
+  getTalleByName: genericController.getModelByParam(Talle,"nombre"),
 };

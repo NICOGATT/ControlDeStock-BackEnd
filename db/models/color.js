@@ -14,7 +14,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Color.init({
-    nombre: DataTypes.STRING
+    nombre: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'Color',

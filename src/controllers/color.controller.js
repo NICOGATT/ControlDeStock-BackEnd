@@ -7,5 +7,5 @@ module.exports = {
   deleteColor: genericController.deleteModel(Color),
   getAllColor: genericController.getAllModels(Color),
   getColorById: genericController.getModelById(Color),
-  getColorByName: genericController.getModelByName(Color),
+  getColorByName: genericController.getModelByParam(Color,"nombre"),
 };

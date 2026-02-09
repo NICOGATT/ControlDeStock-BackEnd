@@ -26,16 +26,16 @@ const {
  *         id:
  *           type: integer
  *           description: ID autogenerado de la preFactura
- *         cliente:
- *           type: string
- *           description: Nombre del cliente
+ *         clienteId:
+ *           type: integer
+ *           description: ID del cliente asociado a la preFactura
  *         fecha:
  *           type: string
  *           format: date-time
  *           description: Fecha de creación de la preFactura
  *       example:
  *         id: 1
- *         cliente: "Juan Perez"
+ *         cliente: 2
  *         fecha: "2024-06-01T12:00:00.000Z"
  */
 

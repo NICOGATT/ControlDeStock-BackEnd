@@ -5,7 +5,7 @@ const { allow } = require('joi');
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Colors', {
+    await queryInterface.createTable('Clientes', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -14,12 +14,15 @@ module.exports = {
       },
       nombre: {
         type: Sequelize.STRING,
-        allowNull: false,
-        unique: true
+        allowNull: false
+      },
+      telefono: {
+        type: Sequelize.STRING,
+        allowNull: false
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Colors');
+    await queryInterface.dropTable('Clientes');
   }
 };

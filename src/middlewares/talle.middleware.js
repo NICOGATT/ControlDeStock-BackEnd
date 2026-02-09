@@ -5,6 +5,6 @@ const genericValidations = require("./genericValidations");
 module.exports = {
   validateTalleSchema: genericValidations.validateSchema(genericSchema),
   validateTalleById: genericValidations.validateModelById(Talle),
-  validateTalleByName: genericValidations.validateModelByName(Talle),
+  validateTalleByName: genericValidations.validateModelByParam(Talle,"nombre"),
   validateTalleName: genericValidations.validateModelName(Talle)
 };
