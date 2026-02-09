@@ -5,7 +5,7 @@ const { clienteSchema, clienteUpdateSchema } = require("../schemas/cliente.schem
 const validateClienteSchema = genericValidations.validateSchema(clienteSchema);
 const validateClienteUpdateSchema = genericValidations.validateSchema(clienteUpdateSchema);
 const validateClienteById = genericValidations.validateModelById(Cliente);
-const validateClienteByName = genericValidations.validateModelByName(Cliente);
+const validateClienteByName = genericValidations.validateModelByParam(Cliente, "nombre");
 
 module.exports = {
   validateClienteSchema,

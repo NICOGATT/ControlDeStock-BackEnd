@@ -16,7 +16,7 @@ const getClienteById = genericController.getModelById(Cliente);
 const getAllClientes = genericController.getAllModels(Cliente);
 
 //6. Buscar clientes por nombre
-const getClienteByName = genericController.getModelByName(Cliente);
+const getClienteByName = genericController.getModelByParam(Cliente, "nombre");
 
 module.exports = {
   createCliente,

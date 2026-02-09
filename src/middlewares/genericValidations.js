@@ -18,15 +18,6 @@ const validateModelById = (Model) => async (req, res, next) =>  {
   next();
 }
 
-const validateModelByName = (Model) => async (req, res, next) => {
-  const { nombre } = req.params;
-  const instance = await Model.findOne({ where: { nombre } });
-  if (!instance) {
-    return res.status(404).json({ message: `${Model.name} con nombre ${nombre} no existe` });
-  }
-  next();
-}
-
 const validateModelName = (Model) => async (req, res, next) => {
   const { nombre } = req.body;
   const instance = await Model.findOne({ where: { nombre } });
@@ -47,7 +38,6 @@ const validateModelByParam = (Model, param) => async (req, res, next) => {
 
 module.exports = {
   validateSchema,
-  validateModelByName,
   validateModelById,
   validateModelName,
   validateModelByParam

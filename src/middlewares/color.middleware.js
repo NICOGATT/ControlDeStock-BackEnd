@@ -5,6 +5,6 @@ const genericValidations = require("./genericValidations");
 module.exports = {
   validateColorSchema: genericValidations.validateSchema(genericSchema),
   validateColorById: genericValidations.validateModelById(Color),
-  validateColorByName: genericValidations.validateModelByName(Color),
+  validateColorByName: genericValidations.validateModelByParam(Color, "nombre"),
   validateColorName: genericValidations.validateModelName(Color)
 };
