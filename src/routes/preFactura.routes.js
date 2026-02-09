@@ -42,7 +42,7 @@ const {
 //1. Crear una nueva preFactura VERIFICADO
 /**
  * @swagger
- * /api/preFactura:
+ * /api/preFacturas:
  *   post:
  *     summary: Crear una nueva preFactura
  *     tags: [PreFacturas]
@@ -68,7 +68,7 @@ router.post('/',
 //2. Eliminar una preFactura por ID VERIFICADO
 /**
  * @swagger
- * /api/preFactura/{id}:
+ * /api/preFacturas/{id}:
  *   delete:
  *     summary: Eliminar una preFactura por ID
  *     tags: [PreFacturas]
@@ -93,7 +93,7 @@ router.delete('/:id',
 //3. Obtener preFacturas VERIFICADO
 /**
  * @swagger
- * /api/preFactura:
+ * /api/preFacturas:
  *   get:
  *     summary: Obtener todas las preFacturas
  *     tags: [PreFacturas]
@@ -114,7 +114,7 @@ router.get('/',
 //4. Obtener una preFactura por ID VERIFICADO
 /**
  * @swagger
- * /api/preFactura/{id}:
+ * /api/preFacturas/{id}:
  *   get:
  *     summary: Obtener una preFactura por ID
  *     tags: [PreFacturas]
@@ -143,7 +143,7 @@ router.get('/:id',
 //5. Obtener preFacturas por cliente VERIFICADO
 /**
  * @swagger
- * /api/preFactura/cliente/{cliente}:
+ * /api/preFacturas/cliente/{cliente}:
  *   get:
  *     summary: Obtener todas las preFacturas de un cliente
  *     tags: [PreFacturas]
@@ -174,7 +174,7 @@ router.get('/cliente/:cliente',
 //6. Obtener preFacturas por fecha VERIFICADO
 /**
  * @swagger
- * /api/preFactura/fecha/{fecha}:
+ * /api/preFacturas/fecha/{fecha}:
  *   get:
  *     summary: Obtener todas las preFacturas en una fecha específica
  *     tags: [PreFacturas]
