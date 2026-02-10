@@ -4,7 +4,11 @@ const genericController = require('./generic.controller');
 const createCliente = genericController.createModel(Cliente);
 
 //2. Modificar un cliente existente
-const updateCliente = genericController.updateModel(Cliente);
+const updateCliente = async (req, res) => {
+  const { id } = req.params;
+  await Cliente.update(req.body, { where: { id } });
+  return res.status(200).json(await Cliente.findByPk(id));
+}
 
 //3. Eliminar un cliente
 const deleteCliente = genericController.deleteModel(Cliente);

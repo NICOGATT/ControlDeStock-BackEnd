@@ -1,7 +1,7 @@
 const joi = require("joi");
 const { genericSchema } = require("./generic.schema");
 
-const productoBaseSchema = joi.object({
+const productoSchema = joi.object({
   nombre: joi.string().min(1).required().messages({
     "string.base": "El nombre debe ser una cadena de texto",
     "string.empty": "El nombre no puede estar vacío",
@@ -20,13 +20,12 @@ const productoBaseSchema = joi.object({
     "number.min": "El precio debe ser al menos 1",
     "any.required": "El precio es obligatorio",
   }),
+  color: genericSchema.required(),
+  talle: genericSchema.required(),
+  tipoDePrenda: genericSchema.required()
 });
 
-const productoSchema = joi.object({
-  ...productoBaseSchema.describe().keys,
-  color: joi.object(genericSchema).required(),
-  talle: joi.object(genericSchema).required(),
-  tipoDePrenda: joi.object(genericSchema).required(),
-});
+const productoUpdateSchema = productoSchema.fork(Object.keys(productoSchema.describe().keys), (field) => field.optional());
 
-module.exports = { productoBaseSchema, productoSchema };
+
+module.exports = { productoUpdateSchema, productoSchema };
