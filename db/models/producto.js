@@ -22,6 +22,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'tipoDePrendaId',
         as: 'tipoDePrenda'
       });
+      Producto.belongsToMany(models.PreFactura, { 
+        through: "PreFacturaProducto",
+        foreignKey: "productoId",
+        otherKey: "preFacturaId",
+        as: "prefacturas"
+      });
     }
   }
   Producto.init({
