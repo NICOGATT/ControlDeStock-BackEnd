@@ -103,42 +103,38 @@ router.post(
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/TipoDePrenda'
- *           examples:
- *             ejemplo:
- *               summary: Ejemplo de body para modificar tipo de prenda
- *               value:
- *                 nombre: "Camisa"
+ *           example:
+ *             nombre: "Camisa"
  *     responses:
  *       200:
- *         description: Tipo de prenda actualizado
+ *         description: Tipo de prenda actualizado exitosamente
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/TipoDePrenda'
- *             examples:
- *               ejemplo:
- *                 summary: Ejemplo de respuesta exitosa
- *                 value:
- *                   id: 1
- *                   nombre: "Camisa"
+ *             example:
+ *               id: 1
+ *               nombre: "Camisa"
  *       400:
- *         description: Error de validación o nombre ya en uso
+ *         description: Error de validación
  *         content:
  *           application/json:
- *             examples:
- *               error:
- *                 summary: Ejemplo de error de validación
- *                 value:
- *                   message: "El nombre ya está en uso"
+ *             example:
+ *               - atributo: "nombre"
+ *                 mensaje: "\"nombre\" ya está en uso"
+ *               - atributo: "nombre"
+ *                 mensaje: "El campo nombre es requerido"
  *       404:
  *         description: Tipo de prenda no encontrado
  *         content:
  *           application/json:
- *             examples:
- *               error:
- *                 summary: Ejemplo de error de no encontrado
- *                 value:
- *                   message: "TipoDePrenda con id 99 no existe"
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: "TipoDePrenda con id 99 no existe"
  */
 router.put(
   "/:id",

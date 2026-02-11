@@ -4,7 +4,8 @@ const {
   validateClienteSchema,
   validateClienteUpdateSchema,
   validateClienteById,
-  validateClienteByName
+  validateClienteByName,
+  validateClienteName
 } = require("../middlewares/cliente.middleware");
 const {
   createCliente,
@@ -71,7 +72,8 @@ const {
  *                 mensaje: "\"telefono\" debe ser un texto"
  */
 router.post('/',
-  validateClienteSchema, 
+  validateClienteSchema,
+  validateClienteName, 
   createCliente
 );
 
@@ -114,9 +116,10 @@ router.post('/',
  *         content:
  *           application/json:
  *             example:
- *               errors:
- *                 - field: "telefono"
- *                   message: "telefono debe ser un número de 10 dígitos"
+ *               - atributo: "telefono"
+ *                 mensaje: "\"telefono\" debe ser un texto"
+ *               - atributo: "nombre"
+ *                 mensaje: "\"nombre\" ya está en uso"
  *       404:
  *         description: Cliente no encontrado
  *         content:
@@ -127,6 +130,7 @@ router.post('/',
 router.put('/:id',
   validateClienteById,
   validateClienteUpdateSchema,
+  validateClienteName,
   updateCliente
 );
 

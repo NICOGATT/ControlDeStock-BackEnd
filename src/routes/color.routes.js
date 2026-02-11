@@ -112,13 +112,11 @@ router.post("/", validateColorSchema, validateColorName, createColor);
  *         description: Error de validación
  *         content:
  *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
  *             example:
- *               message: "Color con el nombre Verde ya está en uso"
+ *               - atributo: "nombre"
+ *                 mensaje: "\"nombre\" ya está en uso"
+ *               - atributo: "nombre"
+ *                 mensaje: "El campo nombre es requerido"
  *       404:
  *         description: Color no encontrado
  *         content:
