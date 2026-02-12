@@ -28,6 +28,12 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: "preFacturaId",
         as: "prefacturas"
       });
+      Producto.belongsToMany(models.Talle, { 
+        through: "StockProducto",
+        foreignKey: "productoId",
+        otherKey: "talleId",
+        as: "talles"
+      });
     }
   }
   Producto.init({
@@ -35,10 +41,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true
-    },
-    cantidad: {
-      type: DataTypes.INTEGER,
-      allowNull: false
     },
     precio: {
       type: DataTypes.INTEGER,

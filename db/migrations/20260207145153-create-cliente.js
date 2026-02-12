@@ -14,7 +14,8 @@ module.exports = {
       },
       nombre: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
       },
       telefono: {
         type: Sequelize.STRING,
