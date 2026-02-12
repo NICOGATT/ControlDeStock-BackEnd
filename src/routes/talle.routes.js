@@ -117,13 +117,11 @@ router.post(
  *         description: Error de validación
  *         content:
  *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
  *             example:
- *               message: "Talle con el nombre L ya esta en uso"
+ *               - atributo: "nombre"
+ *                 mensaje: "\"nombre\" ya está en uso"
+ *               - atributo: "nombre"
+ *                 mensaje: "El campo nombre es requerido"
  *       404:
  *         description: Talle no encontrado
  *         content:

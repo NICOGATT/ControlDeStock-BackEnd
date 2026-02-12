@@ -9,12 +9,18 @@ const dateSchema = joi.object({
 });
 
 const preFacturaSchema = joi.object({
-  clienteId: joi.string().min(3).max(100).required().messages({
+  cliente: joi.string().min(3).max(100).required().messages({
     "string.base": "El cliente debe ser una cadena de texto",
     "string.empty": "El cliente es obligatorio",
     "string.min": "El cliente debe tener al menos 3 caracteres",
     "string.max": "El cliente no debe exceder los 100 caracteres",
     "any.required": "El cliente es obligatorio",
+  }),
+  telefono: joi.string().pattern(/^\d{10}$/).required().messages({
+    "string.base": "El teléfono debe ser una cadena de texto",
+    "string.empty": "El teléfono es obligatorio",
+    "string.pattern.base": "El teléfono debe tener exactamente 10 dígitos",
+    "any.required": "El teléfono es obligatorio",
   }),
 });
 

@@ -149,7 +149,7 @@ const {
  *         content:
  *           application/json:
  *             example:
- *               message: "Producto con el nombre Remera ya esta en uso`"
+ *               message: "Producto con el nombre Remera ya esta en uso"
  */
 router.post("/", 
   validateProductoSchema, 
@@ -162,7 +162,7 @@ router.post("/",
  * @swagger
  * /api/productos/{id}:
  *   put:
- *     summary: Actualizar un producto por su ID
+ *     summary: Actualizar un producto por ID
  *     tags: [Productos]
  *     parameters:
  *       - in: path
@@ -178,12 +178,15 @@ router.post("/",
  *           schema:
  *             $ref: '#/components/schemas/Producto'
  *           example:
- *             nombre: "Remera básica actualizada"
- *             cantidad: 60
- *             precio: 1300
- *             color: { nombre: "Azul" }
- *             talle: { nombre: "L" }
- *             tipoDePrenda: { nombre: "Remera" }
+ *             nombre: "Remera básica"
+ *             cantidad: 100
+ *             precio: 1500
+ *             color:
+ *               nombre: "Azul"
+ *             talle:
+ *               nombre: "L"
+ *             tipoDePrenda:
+ *               nombre: "Camisa"
  *     responses:
  *       200:
  *         description: Producto actualizado exitosamente
@@ -193,18 +196,24 @@ router.post("/",
  *               $ref: '#/components/schemas/Producto'
  *             example:
  *               id: 1
- *               nombre: "Remera básica actualizada"
- *               cantidad: 60
- *               precio: 1300
- *               color: { nombre: "Azul" }
- *               talle: { nombre: "L" }
- *               tipoDePrenda: { nombre: "Remera" }
+ *               nombre: "Remera básica"
+ *               cantidad: 100
+ *               precio: 1500
+ *               color:
+ *                 nombre: "Azul"
+ *               talle:
+ *                 nombre: "L"
+ *               tipoDePrenda:
+ *                 nombre: "Camisa"
  *       400:
  *         description: Error de validación
  *         content:
  *           application/json:
  *             example:
- *               message: "La cantidad debe ser al menos 1"
+ *               - atributo: "nombre"
+ *                 mensaje: "\"nombre\" ya está en uso"
+ *               - atributo: "nombre"
+ *                 mensaje: "El campo nombre es requerido"
  *       404:
  *         description: Producto no encontrado
  *         content:

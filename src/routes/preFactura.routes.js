@@ -4,7 +4,7 @@ const {
   validatePreFacturaSchema,
   validatePreFacturaById,
   validateDate,
-  validateClient
+  validateCliente
 } = require('../middlewares/preFactura.middleware');
 
 const {
@@ -33,10 +33,14 @@ const {
  *           type: string
  *           format: date-time
  *           description: Fecha de creación de la preFactura
+ *         telefono:
+ *           type: string
+ *           description: Teléfono del cliente asociado a la preFactura
  *       example:
  *         id: 1
  *         cliente: 2
  *         fecha: "2024-06-01T12:00:00.000Z"
+ *         telefono: "123456789"
  */
 
 //1. Crear una nueva preFactura VERIFICADO
@@ -51,7 +55,17 @@ const {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/PreFacturaRequest'
+ *             type: object
+ *             properties:
+ *               cliente:
+ *                 type: string
+ *                 description: Nombre del cliente asociado a la preFactura
+ *               telefono:
+ *                 type: string
+ *                 description: Teléfono del cliente asociado a la preFactura
+ *           example:
+ *             cliente: "Juan Perez"
+ *             telefono: "1234567890"
  *     responses:
  *       201:
  *         description: PreFactura creada exitosamente
@@ -59,6 +73,10 @@ const {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/PreFactura'
+ *             example:
+ *               id: 1
+ *               cliente: "Juan Perez"
+ *               fecha: "2024-06-01T12:00:00.000Z"
  */
 router.post('/',
   validatePreFacturaSchema,
@@ -143,17 +161,17 @@ router.get('/:id',
 //5. Obtener preFacturas por cliente VERIFICADO
 /**
  * @swagger
- * /api/preFacturas/cliente/{cliente}:
+ * /api/preFacturas/cliente/{nombre}:
  *   get:
  *     summary: Obtener todas las preFacturas de un cliente
  *     tags: [PreFacturas]
  *     parameters:
  *       - in: path
- *         name: cliente
+ *         name: nombre
  *         schema:
  *           type: string
  *         required: true
- *         description: Nombre del cliente
+ *         description: nombre del cliente
  *     responses:
  *       200:
  *         description: Lista de preFacturas del cliente
@@ -166,8 +184,8 @@ router.get('/:id',
  *       404:
  *         description: Cliente no encontrado
  */
-router.get('/cliente/:cliente', 
-  validateClient,
+router.get('/cliente/:nombre', 
+  validateCliente,
   getPreFacturasByClient
 );
 
