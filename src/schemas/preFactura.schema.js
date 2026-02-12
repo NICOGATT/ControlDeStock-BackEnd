@@ -16,6 +16,12 @@ const preFacturaSchema = joi.object({
     "string.max": "El cliente no debe exceder los 100 caracteres",
     "any.required": "El cliente es obligatorio",
   }),
+  telefono: joi.string().pattern(/^\d{10}$/).required().messages({
+    "string.base": "El teléfono debe ser una cadena de texto",
+    "string.empty": "El teléfono es obligatorio",
+    "string.pattern.base": "El teléfono debe tener exactamente 10 dígitos",
+    "any.required": "El teléfono es obligatorio",
+  }),
 });
 
 module.exports = { preFacturaSchema, dateSchema };

@@ -1,44 +1,32 @@
 const { PreFacturaProducto, Producto, PreFactura } = require("../../db/models");
 
 //1. Agregar productos a una prefactura
-const awaitPreFacturaProducto = async (preFacturaId, productoId, cantidad) => {
-  await PreFacturaProducto.create({
-    preFacturaId,
-    productoId,
-    cantidad,
-  });
-};
-
 const addProductsToPreFactura = async (req, res) => {
-  const { elementos, preFacturaId } = req.body;
-
-  const promesas = [];
-
-  for (const elemento of elementos) {
-    promesas.push(
-      awaitPreFacturaProducto(
-        preFacturaId,
-        elemento.productoId,
-        elemento.cantidad,
-      ),
-    );
-  }
+  const { productos, preFacturaId } = req.body;
+  
+  const promesas = productos.map((elemento) =>
+    PreFacturaProducto.create({
+      preFacturaId,
+      productoId: elemento.productoId,
+      cantidad: elemento.cantidad,
+    })
+  );
 
   await Promise.all(promesas);
 
-  res.status(201).json(
-    await PreFactura.findByPk(preFacturaId, {
-      include: [
-        {
-          model: Producto,
-          as: "productos",
-          through: {
-            attributes: ["cantidad"],
-          },
+  const prefactura = await PreFactura.findByPk(preFacturaId, {
+    include: [
+      {
+        model: Producto,
+        as: "productos",
+        through: {
+          attributes: ["cantidad"],
         },
-      ],
-    }),
-  );
+      },
+    ],
+  });
+
+  res.status(201).json(prefactura);
 };
 
 //2. Editar productos de una prefactura por ID

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
   validatePreFacturaProductoSchema,
+  validatePreFacturaProductoDeleteSchema,
   validatePreFacturaProductoExistence,
   validatePreFacturaProductoNonExistence
 } = require("../middlewares/preFacturaProducto.middleware");
@@ -40,10 +41,12 @@ const {
  *           description: ID de la prefactura
  *         productoId:
  *           type: integer
- *           description: ID del producto
+ *           description: ID del producto (mínimo 1)
+ *           minimum: 1
  *         cantidad:
  *           type: integer
- *           description: Cantidad del producto
+ *           description: Cantidad del producto (mínimo 1)
+ *           minimum: 1
  *       required:
  *         - preFacturaId
  *         - productoId
@@ -54,10 +57,10 @@ const {
  *         cantidad: 5
  */
 
-//1. Agregar productos a una prefactura
+//1. Agregar productos a una prefactura VERIFICADO
 /**
  * @swagger
- * /:
+ * /api/preFacturaProductos:
  *   post:
  *     summary: Agregar productos a una prefactura
  *     tags: [PreFacturaProducto]
@@ -66,21 +69,51 @@ const {
  *       content:
  *         application/json:
  *           schema:
- *             type: array
- *             items:
- *               $ref: '#/components/schemas/PreFacturaProducto'
+ *             type: object
+ *             properties:
+ *               productos:
+ *                 type: array
+ *                 description: Lista de productos 
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     productoId:
+ *                       type: integer
+ *                       description: ID del producto (mínimo 1)
+ *                       minimum: 1
+ *                     cantidad:
+ *                       type: integer
+ *                       description: Cantidad del producto (mínimo 1)
+ *                       minimum: 1
+ *                   required:
+ *                     - productoId
+ *                     - cantidad
+ *               preFacturaId:
+ *                 type: integer
+ *                 description: ID de la prefactura (mínimo 1)
+ *                 minimum: 1
+ *             required:
+ *               - productos
+ *               - preFacturaId
+ *             example:
+ *               productos:
+ *                 - productoId: 1
+ *                   cantidad: 1
+ *                 - productoId: 2
+ *                   cantidad: 1
+ *               preFacturaId: 1
  *     responses:
  *       201:
  *         description: Productos agregados correctamente
  *         content:
  *           application/json:
  *             example:
- *               - preFacturaId: 1
- *                 productoId: 2
- *                 cantidad: 5
- *               - preFacturaId: 1
- *                 productoId: 3
- *                 cantidad: 10
+ *               productos:
+ *                 - productoId: 1
+ *                   cantidad: 1
+ *                 - productoId: 2
+ *                   cantidad: 1
+ *               preFacturaId: 1
  *       400:
  *         description: Error de validación
  */
@@ -91,21 +124,51 @@ router.post(
   addProductsToPreFactura
 );
 
-//2. Editar productos de una prefactura por ID
+//2. Editar productos de una prefactura por ID VERIFICADO
 /**
  * @swagger
- * /:
+ * /api/preFacturaProductos:
  *   put:
  *     summary: Editar productos de una prefactura
  *     tags: [PreFacturaProducto]
- *     requestBody:
+*     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: array
- *             items:
- *               $ref: '#/components/schemas/PreFacturaProducto'
+ *             type: object
+ *             properties:
+ *               productos:
+ *                 type: array
+ *                 description: Lista de productos 
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     productoId:
+ *                       type: integer
+ *                       description: ID del producto (mínimo 1)
+ *                       minimum: 1
+ *                     cantidad:
+ *                       type: integer
+ *                       description: Cantidad del producto (mínimo 1)
+ *                       minimum: 1
+ *                   required:
+ *                     - productoId
+ *                     - cantidad
+ *               preFacturaId:
+ *                 type: integer
+ *                 description: ID de la prefactura (mínimo 1)
+ *                 minimum: 1
+ *             required:
+ *               - productos
+ *               - preFacturaId
+ *             example:
+ *               productos:
+ *                 - productoId: 1
+ *                   cantidad: 10
+ *                 - productoId: 2
+ *                   cantidad: 5
+ *               preFacturaId: 1
  *     responses:
  *       200:
  *         description: Productos actualizados correctamente
@@ -128,21 +191,45 @@ router.put(
   editPreFacturaProducto
 );
 
-//3. Eliminar productos de una prefactura por ID
+//3. Eliminar productos de una prefactura por ID VERIFICADO
 /**
  * @swagger
- * /:
+ * /api/preFacturaProductos:
  *   delete:
  *     summary: Eliminar productos de una prefactura
  *     tags: [PreFacturaProducto]
- *     requestBody:
+*     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: array
- *             items:
- *               $ref: '#/components/schemas/PreFacturaProducto'
+ *             type: object
+ *             properties:
+ *               productos:
+ *                 type: array
+ *                 description: Lista de productos 
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     productoId:
+ *                       type: integer
+ *                       description: ID del producto (mínimo 1)
+ *                       minimum: 1
+ *                   required:
+ *                     - productoId
+ *                     - cantidad
+ *               preFacturaId:
+ *                 type: integer
+ *                 description: ID de la prefactura (mínimo 1)
+ *                 minimum: 1
+ *             required:
+ *               - productos
+ *               - preFacturaId
+ *             example:
+ *               productos:
+ *                 - productoId: 1
+ *                 - productoId: 2
+ *               preFacturaId: 1
  *     responses:
  *       200:
  *         description: Productos eliminados correctamente
@@ -155,7 +242,7 @@ router.put(
  */
 router.delete(
   "/",
-  validatePreFacturaProductoSchema,
+  validatePreFacturaProductoDeleteSchema,
   validatePreFacturaProductoExistence,
   deletePreFacturaProducto
 );
@@ -164,7 +251,7 @@ router.delete(
 //4. Obtener todas las prefacturas con sus productos
 /**
  * @swagger
- * /:
+ * /api/preFacturaProductos:
  *   get:
  *     summary: Obtener todas las prefacturas con sus productos
  *     tags: [PreFacturaProducto]
@@ -190,7 +277,7 @@ router.get("/", getAllPreFacturasWithProducts);
 //5. Obtener productos de una prefactura
 /**
  * @swagger
- * /prefactura/{preFacturaId}/productos:
+ * /api/preFacturaProductos/prefactura/{preFacturaId}/productos:
  *   get:
  *     summary: Obtener productos de una prefactura
  *     tags: [PreFacturaProducto]

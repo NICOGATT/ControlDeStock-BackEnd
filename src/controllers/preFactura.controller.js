@@ -4,13 +4,13 @@ const { Op } = require("sequelize");
 
 //1. Crear una nueva preFactura
 const createPreFactura = async (req, res) => {
-  const { cliente } = req.body;
+  const { cliente, telefono } = req.body;
   const newPreFactura = await PreFactura.create({
     fecha: new Date(),
   });
 
   await Cliente.findOrCreate({
-    where: { nombre: cliente },
+    where: { nombre: cliente, telefono },
   }).then(([cliente, created]) => {
     newPreFactura.setCliente(cliente);
     newPreFactura.reload();

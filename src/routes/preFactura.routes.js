@@ -33,10 +33,14 @@ const {
  *           type: string
  *           format: date-time
  *           description: Fecha de creación de la preFactura
+ *         telefono:
+ *           type: string
+ *           description: Teléfono del cliente asociado a la preFactura
  *       example:
  *         id: 1
  *         cliente: 2
  *         fecha: "2024-06-01T12:00:00.000Z"
+ *         telefono: "123456789"
  */
 
 //1. Crear una nueva preFactura VERIFICADO
@@ -56,8 +60,12 @@ const {
  *               cliente:
  *                 type: string
  *                 description: Nombre del cliente asociado a la preFactura
+ *               telefono:
+ *                 type: string
+ *                 description: Teléfono del cliente asociado a la preFactura
  *           example:
  *             cliente: "Juan Perez"
+ *             telefono: "1234567890"
  *     responses:
  *       201:
  *         description: PreFactura creada exitosamente
