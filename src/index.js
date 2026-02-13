@@ -11,6 +11,7 @@ const clienteRoutes = require("./routes/cliente.routes");
 const tipoDePrendaRoutes = require("./routes/tipoDePrenda.routes");
 const productoRoutes = require("./routes/producto.routes");
 const preFacturaProductoRoutes = require("./routes/preFacturaProducto.routes");
+const stockProductoRoutes = require("./routes/stockProducto.routes");
 
 const swaggerUI = require("swagger-ui-express");
 const swaggerSpecs = require("./swagger/swagger");
@@ -25,6 +26,7 @@ app.use("/api/clientes", clienteRoutes);
 app.use("/api/tipoDePrendas", tipoDePrendaRoutes);
 app.use("/api/productos", productoRoutes);
 app.use("/api/preFacturaProductos", preFacturaProductoRoutes);
+app.use("/api/stockProductos", preFacturaProductoRoutes);
 app.use("/api/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpecs));
 
 
