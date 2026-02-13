@@ -8,17 +8,15 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Color.hasMany(models.StockProducto, { //revisar despues
-        foreignKey: "colorId",
-        as: "productos",
-      });
       Color.hasMany(models.PreFacturaProducto, {
         foreignKey: "colorId",
         as: "prefacturaproductos",
       });
-      Color.hasMany(models.StockProducto, {
+      Color.belongsToMany(models.Producto, {
+        through: "StockProducto",
         foreignKey: "colorId",
-        as: "stockproductos",
+        otherKey: "productoId",
+        as: "productos",
       });
     }
   }

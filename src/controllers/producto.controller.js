@@ -41,7 +41,8 @@ const createProducto = async (req, res) => {
   return res.status(201).json(
     await Producto.findByPk(newProducto.id, {
       include: [
-        { model: Talle, as: "talles" , through: { attributes: ['stock'] }}, // Incluir el stock desde la tabla intermedia
+        { model: Color, as: "colores" },
+        { model: Talle, as: "talles"}, // Incluir el stock desde la tabla intermedia
         { model: TipoDePrenda, as: "tipoDePrenda" },
       ],
     }),

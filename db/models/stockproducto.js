@@ -54,7 +54,13 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "StockProducto",
-      timestamps: false
+      timestamps: false,
+      indexes: [
+        {
+          unique: true,
+          fields: ["productoId", "colorId", "talleId"],
+        },
+      ],
     },
   );
   return StockProducto;

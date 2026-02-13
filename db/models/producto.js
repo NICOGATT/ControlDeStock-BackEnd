@@ -26,6 +26,12 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: "talleId",
         as: "talles"
       });
+      Producto.belongsToMany(models.Color, { 
+        through: "StockProducto",
+        foreignKey: "productoId",
+        otherKey: "colorId",
+        as: "colores"
+      });
     }
   }
   Producto.init({
