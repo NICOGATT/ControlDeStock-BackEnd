@@ -11,6 +11,7 @@ module.exports = {
       },
       productoId: {
         type: Sequelize.INTEGER,
+        primaryKey: true,
         references: {
           model: 'Productos',
           key: 'id'
@@ -20,8 +21,19 @@ module.exports = {
       },
       talleId: {
         type: Sequelize.INTEGER,
+        primaryKey: true,
         references: {
           model: 'Talles',
+          key: 'id'
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE"
+      },
+      colorId: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        references: {
+          model: 'Colores',
           key: 'id'
         },
         onDelete: "CASCADE",

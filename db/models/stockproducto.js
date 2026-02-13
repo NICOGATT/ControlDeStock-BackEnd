@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "talleId",
         as: "talle",
       });
+      StockProducto.belongsTo(models.Color, {
+        foreignKey: "colorId",
+        as: "color",
+      });
     }
   }
   StockProducto.init(
@@ -24,12 +28,21 @@ module.exports = (sequelize, DataTypes) => {
       productoId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        primaryKey: true,
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
       talleId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        primaryKey: true,
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
+      colorId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },

@@ -39,7 +39,7 @@ module.exports = {
       colorId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Colors',
+          model: 'Colores',
           key: 'id'
         },
         onUpdate: 'CASCADE',
