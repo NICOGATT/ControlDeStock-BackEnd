@@ -27,6 +27,24 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
+      talleId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Talles',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      colorId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Colors',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
       cantidad: {
         type: Sequelize.INTEGER,
         allowNull: false

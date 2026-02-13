@@ -16,6 +16,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "productoId",
         as: "producto",
       });
+      PreFacturaProducto.belongsTo(models.Color, {
+        foreignKey: "colorId",
+        as: "color",
+      });
+      PreFacturaProducto.belongsTo(models.Talle, {
+        foreignKey: "talleId",
+        as: "talle",
+      });
     }
   }
   PreFacturaProducto.init(
@@ -27,6 +35,18 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
       },
       productoId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
+      talleId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
+      colorId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         onDelete: "CASCADE",
