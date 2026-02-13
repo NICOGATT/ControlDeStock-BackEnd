@@ -5,10 +5,12 @@ const genericControllers = require("./generic.controller");
 const crearStock = async (modeloColor, valorColor, modeloTalle, valorTalle, productoId, stock) => {
   const color = await modeloColor.findOrCreate({ where: { nombre: valorColor } });
   const talle = await modeloTalle.findOrCreate({ where: { nombre: valorTalle } });
+  console.log("Color encontrado o creado:", color[0].toJSON());
+  console.log("Talle encontrado o creado:", talle[0].toJSON());
   await StockProducto.create({
     productoId,
-    colorId: color.id,
-    talleId: talle.id,
+    colorId: color[0].id, // Access the ID from the first element of the array
+    talleId: talle[0].id, // Access the ID from the first element of the array
     stock: stock,
   });
 };
@@ -31,12 +33,15 @@ const createProducto = async (req, res) => {
 
   await Promise.all(promesas);
 
+  await TipoDePrenda.findOrCreate({ 
+    where: { nombre: req.body.tipoDePrenda } 
+  }).then(([tipo]) => newProducto.setTipoDePrenda(tipo));
+
   // Usar alias en include
   return res.status(201).json(
     await Producto.findByPk(newProducto.id, {
       include: [
-        { model: Color, as: "color" },
-        { model: Talle, as: "talle" },
+        { model: Talle, as: "talles" , through: { attributes: ['stock'] }}, // Incluir el stock desde la tabla intermedia
         { model: TipoDePrenda, as: "tipoDePrenda" },
       ],
     }),

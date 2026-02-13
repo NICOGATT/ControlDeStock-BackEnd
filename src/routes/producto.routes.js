@@ -83,52 +83,55 @@ const {
  *             type: object
  *             required:
  *               - nombre
- *               - cantidad
  *               - precio
- *               - color
- *               - talle
+ *               - colorYTalle
  *               - tipoDePrenda
  *             properties:
  *               nombre:
  *                 type: string
  *                 description: Nombre del producto
  *                 example: "Remera básica"
- *               cantidad:
- *                 type: integer
- *                 description: Cantidad disponible
- *                 example: 50
  *               precio:
  *                 type: integer
  *                 description: Precio del producto
  *                 example: 1200
- *               color:
- *                 type: object
- *                 properties:
- *                   nombre:
- *                     type: string
- *                     description: Nombre del color
- *                     example: "Rojo"
- *               talle:
- *                 type: object
- *                 properties:
- *                   nombre:
- *                     type: string
- *                     description: Nombre del talle
- *                     example: "M"
+ *               colorYTalle:
+ *                 type: array
+ *                 description: Lista de combinaciones de colores y talles
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - color
+ *                     - talle
+ *                     - cantidad
+ *                   properties:
+ *                     color:
+ *                       type: string
+ *                       description: Nombre del color
+ *                       example: "Rojo"
+ *                     talle:
+ *                       type: string
+ *                       description: Nombre del talle
+ *                       example: "M"
+ *                     cantidad:
+ *                       type: integer
+ *                       description: Cantidad disponible para esta combinación
+ *                       example: 50
  *               tipoDePrenda:
- *                 type: object
- *                 properties:
- *                   nombre:
- *                     type: string
- *                     description: Nombre del tipo de prenda
- *                     example: "Remera"
+ *                 type: string
+ *                 description: Tipo de prenda del producto
+ *                 example: "Camisa"
  *           example:
  *             nombre: "Remera básica"
- *             cantidad: 50
  *             precio: 1200
- *             color: { nombre: "Rojo" }
- *             talle: { nombre: "M" }
- *             tipoDePrenda: { nombre: "Remera" }
+ *             colorYTalle:
+ *               - color: "Rojo"
+ *                 talle: "M"
+ *                 cantidad: 50
+ *               - color: "Azul"
+ *                 talle: "L"
+ *                 cantidad: 30
+ *             tipoDePrenda: "Camisa"
  *     responses:
  *       201:
  *         description: Producto creado exitosamente
