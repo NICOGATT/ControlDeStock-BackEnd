@@ -7,6 +7,7 @@ const asociarModelo = async (modelo, valor) => {
   return registro;
 };
 
+//EDITAR CUANDO TERMINE STOCKPRODUCTO
 const createProducto = async (req, res) => {
   const { nombre, cantidad, precio, color, talle, tipoDePrenda } = req.body;
   const newProducto = await Producto.create({
@@ -45,6 +46,7 @@ const createProducto = async (req, res) => {
   }));
 };
 
+//EDITAR CUANDO TERMINE STOCKPRODUCTO
 //2. Actualizar un producto por su ID
 const updateProducto = async (req, res) => {
   const { id } = req.params;
