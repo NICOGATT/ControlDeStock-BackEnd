@@ -3,12 +3,6 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('StockProductos', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
       productoId: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -43,6 +37,12 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       }
+    });
+    
+    await queryInterface.addConstraint('StockProductos', {
+      fields: ['productoId', 'talleId', 'colorId'],
+      type: 'primary key',
+      name: 'PK_StockProductos'
     });
   },
   async down(queryInterface, Sequelize) {

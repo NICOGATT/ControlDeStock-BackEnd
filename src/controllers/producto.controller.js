@@ -5,12 +5,10 @@ const genericControllers = require("./generic.controller");
 const crearStock = async (modeloColor, valorColor, modeloTalle, valorTalle, productoId, stock) => {
   const color = await modeloColor.findOrCreate({ where: { nombre: valorColor } });
   const talle = await modeloTalle.findOrCreate({ where: { nombre: valorTalle } });
-  console.log("Color encontrado o creado:", color[0].toJSON());
-  console.log("Talle encontrado o creado:", talle[0].toJSON());
   await StockProducto.create({
     productoId,
-    colorId: color[0].id, // Access the ID from the first element of the array
-    talleId: talle[0].id, // Access the ID from the first element of the array
+    colorId: color[0].id, 
+    talleId: talle[0].id, 
     stock: stock,
   });
 };
@@ -37,16 +35,22 @@ const createProducto = async (req, res) => {
     where: { nombre: req.body.tipoDePrenda } 
   }).then(([tipo]) => newProducto.setTipoDePrenda(tipo));
 
-  // Usar alias en include
-  return res.status(201).json(
-    await Producto.findByPk(newProducto.id, {
+  const responseProducto = await Producto.findByPk(newProducto.id, {
       include: [
-        { model: Color, as: "colores" },
-        { model: Talle, as: "talles"}, // Incluir el stock desde la tabla intermedia
+        {
+          model: StockProducto,
+          as: "stockProductos",
+          attributes: ["stock"],
+          include: [
+            { model: Color, as: "color", attributes: ["nombre"] },
+            { model: Talle, as: "talle", attributes: ["nombre"] },
+          ],
+        },
         { model: TipoDePrenda, as: "tipoDePrenda" },
       ],
-    }),
-  );
+    })
+
+  return res.status(201).json(responseProducto);
 };
 
 //EDITAR CUANDO TERMINE STOCKPRODUCTO

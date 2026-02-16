@@ -1,5 +1,4 @@
 "use strict";
-const { allow } = require("joi");
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class StockProducto extends Model {
@@ -58,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
       indexes: [
         {
           unique: true,
-          fields: ["productoId", "colorId", "talleId"],
+          fields: ["productoId", "talleId", "colorId"],
         },
       ],
     },

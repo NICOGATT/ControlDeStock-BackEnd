@@ -14,7 +14,7 @@ const createStockProducto = async (req, res) => {
         talleId,
       },
       defaults: {
-        cantidad,
+        stock: cantidad,
       }
     });
   });
