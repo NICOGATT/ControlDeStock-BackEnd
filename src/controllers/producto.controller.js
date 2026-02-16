@@ -21,13 +21,9 @@ const createProducto = async (req, res) => {
     precio,
   });
 
-  const promesas = [];
-
-  promesas.push(
-    colorYTalle.map(async (item) => {
-      crearStock(Color, item.color, Talle, item.talle, newProducto.id, item.cantidad);
-    }),
-  );
+  const promesas = colorYTalle.map(async (item) => {
+    await crearStock(Color, item.color, Talle, item.talle, newProducto.id, item.cantidad);
+  });
 
   await Promise.all(promesas);
 
