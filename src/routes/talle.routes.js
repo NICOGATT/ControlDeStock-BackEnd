@@ -37,7 +37,7 @@ const {
  *         nombre: "M"
  */
 
-//1. Crear un nuevo talle VERIFICADO
+//1. Crear un nuevo talle VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/talles:
@@ -66,13 +66,18 @@ const {
  *         description: Error de validación
  *         content:
  *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *             example:
- *               message: "Talle con el nombre XL ya esta en uso"
+ *             examples:
+ *               error:
+ *                 summary: Ejemplo de error de validación
+ *                 value:
+ *                   message: "Talle con el nombre XL ya esta en uso"
+ *               error2:
+ *                 summary: Otro ejemplo de error de validación
+ *                 value:
+ *                   - atributo: "nombre"
+ *                     mensaje: "\"nombre\" es obligatorio"
+ *                   - atributo: "a"
+ *                     mensaje: "\"a\" is not allowed"
  */
 router.post(
   "/",
@@ -81,7 +86,7 @@ router.post(
   createTalle
 );
 
-//2. Actualizar un talle por ID VERIFICADO
+//2. Actualizar un talle por ID VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/talles/{id}:
@@ -117,11 +122,18 @@ router.post(
  *         description: Error de validación
  *         content:
  *           application/json:
- *             example:
- *               - atributo: "nombre"
- *                 mensaje: "\"nombre\" ya está en uso"
- *               - atributo: "nombre"
- *                 mensaje: "El campo nombre es requerido"
+ *             examples:
+ *               error:
+ *                 summary: Ejemplo de error de validación
+ *                 value:
+ *                   message: "Talle con el nombre XL ya esta en uso"
+ *               error2:
+ *                 summary: Otro ejemplo de error de validación
+ *                 value:
+ *                   - atributo: "nombre"
+ *                     mensaje: "\"nombre\" es obligatorio"
+ *                   - atributo: "a"
+ *                     mensaje: "\"a\" is not allowed"
  *       404:
  *         description: Talle no encontrado
  *         content:
@@ -142,7 +154,7 @@ router.put(
   updateTalle
 );
 
-//3. Eliminar un talle por ID VERIFICADO
+//3. Eliminar un talle por ID VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/talles/{id}:
@@ -176,7 +188,7 @@ router.delete("/:id",
   deleteTalle
 );
 
-//4. Obtener todos los talles VERIFICADO
+//4. Obtener todos los talles VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/talles:
@@ -200,7 +212,7 @@ router.delete("/:id",
  */
 router.get("/", getAllTalles);
 
-//5. Obtener un talle por ID VERIFICADO
+//5. Obtener un talle por ID VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/talles/{id}:
@@ -241,7 +253,7 @@ router.get("/:id",
   getTalleById
 );
 
-//6. Buscar talles por nombre VERIFICADO
+//6. Buscar talles por nombre VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/talles/nombre/{nombre}:
