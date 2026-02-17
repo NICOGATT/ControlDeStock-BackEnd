@@ -23,10 +23,31 @@ const createPreFactura = async (req, res) => {
 const deletePreFacturaById = genericController.deleteModel(PreFactura);
 
 //3. Obtener todas las preFacturas
-const getAllPreFacturas = genericController.getAllModels(PreFactura);
+const getAllPreFacturas = async (req, res) => {
+  const preFacturas = await PreFactura.findAll({
+    attributes: ["id", "fecha"],
+    include: {
+      model: Cliente,
+      as: "cliente",
+      attributes: ["nombre", "telefono"],
+    },
+  });
+  res.status(200).json(preFacturas);
+};
 
 //4. Obtener una preFactura por ID
-const getPreFacturaById = genericController.getModelById(PreFactura);
+const getPreFacturaById = async (req, res) => {
+  const { id } = req.params;
+  const preFactura = await PreFactura.findByPk(id, {
+    attributes: ["id", "fecha"],
+    include: {
+      model: Cliente,
+      as: "cliente",
+      attributes: ["nombre", "telefono"],
+    },
+  });
+  res.status(200).json(preFactura);
+}
 
 //5. Obtener todas las preFacturas de un cliente
 const getPreFacturasByClient = async (req, res) => {
@@ -34,7 +55,13 @@ const getPreFacturasByClient = async (req, res) => {
   const cliente = await Cliente.findOne({ where: { nombre } });
 
   const preFacturas = await PreFactura.findAll({
+    attributes: ["id", "fecha"],
     where: { clienteId: cliente.id },
+    include: {
+      model: Cliente,
+      as: "cliente",
+      attributes: ["nombre", "telefono"],
+    },
   });
 
   res.status(200).json(preFacturas);
@@ -48,10 +75,16 @@ const getPreFacturasByDate = async (req, res) => {
   const hasta = new Date(fecha + "T23:59:59.999Z");
 
   const preFacturas = await PreFactura.findAll({
+    attributes: ["id", "fecha"],
     where: {
       fecha: {
         [Op.between]: [desde, hasta],
       },
+    },
+    include: {
+      model: Cliente,
+      as: "cliente",
+      attributes: ["nombre", "telefono"],
     },
   });
   res.status(200).json(preFacturas);

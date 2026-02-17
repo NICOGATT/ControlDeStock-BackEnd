@@ -43,7 +43,7 @@ const {
  *         telefono: "123456789"
  */
 
-//1. Crear una nueva preFactura VERIFICADO
+//1. Crear una nueva preFactura VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/preFacturas:
@@ -77,6 +77,15 @@ const {
  *               id: 1
  *               cliente: "Juan Perez"
  *               fecha: "2024-06-01T12:00:00.000Z"
+ *       400:
+ *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             example:
+ *               - atributo: "cliente"
+ *                 mensaje: "El cliente es obligatorio"
+ *               - atributo: "a"
+ *                 mensaje: "\"a\" is not allowed"
  */
 router.post('/',
   validatePreFacturaSchema,
@@ -108,7 +117,7 @@ router.delete('/:id',
   deletePreFacturaById
 );
 
-//3. Obtener preFacturas VERIFICADO
+//3. Obtener preFacturas VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/preFacturas:
@@ -124,6 +133,17 @@ router.delete('/:id',
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/PreFactura'
+ *             example:
+ *               - id: 1
+ *                 fecha: "2026-02-17T19:47:09.000Z"
+ *                 cliente:
+ *                   nombre: "Juan Perez"
+ *                   telefono: "1234567890"
+ *               - id: 2
+ *                 fecha: "2026-02-17T19:47:11.000Z"
+ *                 cliente:
+ *                   nombre: "Juan Perez"
+ *                   telefono: "1234567890"
  */
 router.get('/', 
   getAllPreFacturas
@@ -150,6 +170,12 @@ router.get('/',
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/PreFactura'
+ *             example:
+ *               id: 1
+ *               fecha: "2026-02-17T19:47:09.000Z"
+ *               cliente:
+ *                 nombre: "Juan Perez"
+ *                 telefono: "1234567890"
  *       404:
  *         description: PreFactura no encontrada
  */
@@ -181,6 +207,12 @@ router.get('/:id',
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/PreFactura'
+ *             example:
+ *               - id: 1
+ *                 fecha: "2026-02-17T19:47:09.000Z"
+ *                 cliente:
+ *                   nombre: "Juan Perez"
+ *                   telefono: "1234567890"
  *       404:
  *         description: Cliente no encontrado
  */
@@ -213,6 +245,17 @@ router.get('/cliente/:nombre',
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/PreFactura'
+ *             example:
+ *               - id: 1
+ *                 fecha: "2026-02-17T19:47:09.000Z"
+ *                 cliente:
+ *                   nombre: "Juan Perez"
+ *                   telefono: "1234567890"
+ *               - id: 3
+ *                 fecha: "2026-02-17T19:56:57.000Z"
+ *                 cliente:
+ *                   nombre: "Juan Perez"
+ *                   telefono: "1234567890"
  *       404:
  *         description: No se encontraron preFacturas en esa fecha
  */
