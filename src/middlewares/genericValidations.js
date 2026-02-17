@@ -19,6 +19,9 @@ const validateModelById = (Model) => async (req, res, next) =>  {
 }
 
 const validateModelName = (Model) => async (req, res, next) => {
+  if (!req.body.nombre) {
+    return next();
+  }
   const { nombre } = req.body;
   const instance = await Model.findOne({ where: { nombre } });
   if (instance) {

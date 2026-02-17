@@ -36,7 +36,7 @@ const {
  *         - telefono
  */
 
-//1. Crear un nuevo cliente VERIFICADO
+//1. Crear un nuevo cliente VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/clientes:
@@ -64,12 +64,21 @@ const {
  *               nombre: "Juan Perez"
  *               telefono: "1123456789"
  *       400:
- *         description: Error de validación de datos
+ *         description: Error de validación
  *         content:
  *           application/json:
- *             example:
- *               - atributo: "telefono"
- *                 mensaje: "\"telefono\" debe ser un texto"
+ *             examples:
+ *               error:
+ *                 summary: Ejemplo de error de validación
+ *                 value:
+ *                   message: "Cliente con el nombre Patitas ya esta en uso"
+ *               error2:
+ *                 summary: Otro ejemplo de error de validación
+ *                 value:
+ *                   - atributo: "nombre"
+ *                     mensaje: "\"nombre\" es obligatorio"
+ *                   - atributo: "a"
+ *                     mensaje: "\"a\" is not allowed"
  */
 router.post('/',
   validateClienteSchema,
@@ -77,7 +86,7 @@ router.post('/',
   createCliente
 );
 
-//2. Modificar un cliente existente VERIFICADO
+//2. Modificar un cliente existente VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/clientes/{id}:
@@ -112,14 +121,21 @@ router.post('/',
  *               nombre: "Juan Perez"
  *               telefono: "1198765432"
  *       400:
- *         description: Error de validación de datos
+ *         description: Error de validación
  *         content:
  *           application/json:
- *             example:
- *               - atributo: "telefono"
- *                 mensaje: "\"telefono\" debe ser un texto"
- *               - atributo: "nombre"
- *                 mensaje: "\"nombre\" ya está en uso"
+ *             examples:
+ *               error:
+ *                 summary: Ejemplo de error de validación
+ *                 value:
+ *                   message: "Cliente con el nombre Patitas ya esta en uso"
+ *               error2:
+ *                 summary: Otro ejemplo de error de validación
+ *                 value:
+ *                   - atributo: "nombre"
+ *                     mensaje: "\"nombre\" es obligatorio"
+ *                   - atributo: "a"
+ *                     mensaje: "\"a\" is not allowed"
  *       404:
  *         description: Cliente no encontrado
  *         content:
@@ -134,7 +150,7 @@ router.put('/:id',
   updateCliente
 );
 
-//3. Eliminar un cliente VERIFICADO
+//3. Eliminar un cliente VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/clientes/{id}:
@@ -167,7 +183,7 @@ router.delete('/:id',
   deleteCliente
 );
 
-//6. Obtener todos los clientes VERIFICADO
+//6. Obtener todos los clientes VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/clientes:
@@ -193,7 +209,7 @@ router.delete('/:id',
  */
 router.get('/', getAllClientes);
 
-//5. Obtener un cliente por su ID VERIFICADO
+//5. Obtener un cliente por su ID VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/clientes/{id}:
@@ -230,7 +246,7 @@ router.get('/:id',
   getClienteById
 );
 
-//6. Buscar clientes por nombre VERIFICADO
+//6. Buscar clientes por nombre VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/clientes/nombre/{nombre}:

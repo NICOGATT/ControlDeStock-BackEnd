@@ -5,14 +5,7 @@ const { clienteSchema, clienteUpdateSchema } = require("../schemas/cliente.schem
 const validateClienteSchema = genericValidations.validateSchema(clienteSchema);
 const validateClienteUpdateSchema = genericValidations.validateSchema(clienteUpdateSchema);
 const validateClienteById = genericValidations.validateModelById(Cliente);
-const validateClienteName = async (req, res, next) => {
-  const { nombre } = req.params;
-  const cliente = await Cliente.findOne({ where: { nombre } });
-  if (cliente) {
-    return res.status(400).json({ message: `Cliente con el nombre ${nombre} ya existe` });
-  }
-  next();
-};
+const validateClienteName = genericValidations.validateModelName(Cliente);
 
 const validateClienteByName = genericValidations.validateModelByParam(Cliente, "nombre");
 
