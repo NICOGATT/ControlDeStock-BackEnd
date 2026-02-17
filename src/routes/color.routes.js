@@ -37,7 +37,7 @@ const {
  *         nombre: "Rojo"
  */
 
-//1. Crear un nuevo color
+//1. Crear un nuevo color VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/colores:
@@ -66,17 +66,22 @@ const {
  *         description: Error de validación
  *         content:
  *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *             example:
- *               message: "Color con el nombre Azul ya está en uso"
+ *             examples:
+ *               error:
+ *                 summary: Ejemplo de error de validación
+ *                 value:
+ *                   message: "Color con el nombre Azul ya esta en uso"
+ *               error2:
+ *                 summary: Otro ejemplo de error de validación
+ *                 value:
+ *                   - atributo: "nombre"
+ *                     mensaje: "\"nombre\" es obligatorio"
+ *                   - atributo: "a"
+ *                     mensaje: "\"a\" is not allowed"
  */
 router.post("/", validateColorSchema, validateColorName, createColor);
 
-//2. Actualizar un color por ID
+//2. Actualizar un color por ID VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/colores/{id}:
@@ -112,11 +117,18 @@ router.post("/", validateColorSchema, validateColorName, createColor);
  *         description: Error de validación
  *         content:
  *           application/json:
- *             example:
- *               - atributo: "nombre"
- *                 mensaje: "\"nombre\" ya está en uso"
- *               - atributo: "nombre"
- *                 mensaje: "El campo nombre es requerido"
+ *             examples:
+ *               error:
+ *                 summary: Ejemplo de error de validación
+ *                 value:
+ *                   message: "Color con el nombre Azul ya esta en uso"
+ *               error2:
+ *                 summary: Otro ejemplo de error de validación
+ *                 value:
+ *                   - atributo: "nombre"
+ *                     mensaje: "\"nombre\" es obligatorio"
+ *                   - atributo: "a"
+ *                     mensaje: "\"a\" is not allowed"
  *       404:
  *         description: Color no encontrado
  *         content:
@@ -137,7 +149,7 @@ router.put(
   updateColor,
 );
 
-//3. Eliminar un color por ID
+//3. Eliminar un color por ID VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/colores/{id}:
@@ -168,7 +180,7 @@ router.put(
  */
 router.delete("/:id", validateColorById, deleteColor);
 
-//4. Obtener todos los colores
+//4. Obtener todos los colores VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/colores:
@@ -192,7 +204,7 @@ router.delete("/:id", validateColorById, deleteColor);
  */
 router.get("/", getAllColor);
 
-//5. Obtener un color por ID
+//5. Obtener un color por ID VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/colores/{id}:
@@ -230,7 +242,7 @@ router.get("/", getAllColor);
  */
 router.get("/:id", validateColorById, getColorById);
 
-//6. Buscar colores por nombre
+//6. Buscar colores por nombre VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/colores/nombre/{nombre}:
