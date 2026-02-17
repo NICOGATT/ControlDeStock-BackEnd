@@ -5,6 +5,7 @@ const {
   validateProductoUpdateSchema,
   validateProductoById,
   validateProductoName,
+  validateProductoByName
 } = require("../middlewares/producto.middleware");
 const {
   createProducto,
@@ -12,6 +13,7 @@ const {
   deleteModel,
   getAllProductos,
   getProductoById,
+  getProductoByName
 } = require("../controllers/producto.controller");
 /**
  * @swagger
@@ -23,11 +25,7 @@ const {
  *       type: object
  *       required:
  *         - nombre
- *         - cantidad
  *         - precio
- *         - color
- *         - talle
- *         - tipoDePrenda
  *       properties:
  *         id:
  *           type: integer
@@ -37,38 +35,18 @@ const {
  *           type: string
  *           description: Nombre del producto
  *           example: "Remera básica"
- *         cantidad:
- *           type: integer
- *           description: Cantidad disponible
- *           example: 50
  *         precio:
  *           type: integer
  *           description: Precio del producto
  *           example: 1200
- *         color:
- *           type: object
- *           properties:
- *             nombre:
- *               type: string
- *               description: Nombre del color
- *               example: "Rojo"
- *         talle:
- *           type: object
- *           properties:
- *             nombre:
- *               type: string
- *               description: Nombre del talle
- *               example: "M"
- *         tipoDePrenda:
- *           type: object
- *           properties:
- *             nombre:
- *               type: string
- *               description: Nombre del tipo de prenda
- *               example: "Remera"
+ *         tipoDePrendaId:
+ *           type: integer
+ *           nullable: true
+ *           description: ID del tipo de prenda asociado
+ *           example: 1
  */
 
-//1. Crear un nuevo producto VERIFICADO
+//1. Crear un nuevo producto VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/productos:
@@ -151,8 +129,18 @@ const {
  *         description: Error de validación
  *         content:
  *           application/json:
- *             example:
- *               message: "Producto con el nombre Remera ya esta en uso"
+ *             examples:
+ *               error:
+ *                 summary: Ejemplo de error de validación
+ *                 value:
+ *                   message: "Producto con el nombre Remera Basica ya esta en uso"
+ *               error2:
+ *                 summary: Otro ejemplo de error de validación
+ *                 value:
+ *                   - atributo: "nombre"
+ *                     mensaje: "\"nombre\" es obligatorio"
+ *                   - atributo: "a"
+ *                     mensaje: "\"a\" is not allowed"
  */
 router.post("/", 
   validateProductoSchema, 
@@ -160,7 +148,7 @@ router.post("/",
   createProducto
 );
 
-//2. Actualizar un producto por su ID VERIFICADO
+//2. Actualizar un producto por su ID VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/productos/{id}:
@@ -181,15 +169,9 @@ router.post("/",
  *           schema:
  *             $ref: '#/components/schemas/Producto'
  *           example:
- *             nombre: "Remera básica"
- *             cantidad: 100
- *             precio: 1500
- *             color:
- *               nombre: "Azul"
- *             talle:
- *               nombre: "L"
- *             tipoDePrenda:
- *               nombre: "Camisa"
+ *             nombre: "Remera"
+ *             precio: 100
+ *             tipoDePrenda: "Remera doble"
  *     responses:
  *       200:
  *         description: Producto actualizado exitosamente
@@ -212,11 +194,18 @@ router.post("/",
  *         description: Error de validación
  *         content:
  *           application/json:
- *             example:
- *               - atributo: "nombre"
- *                 mensaje: "\"nombre\" ya está en uso"
- *               - atributo: "nombre"
- *                 mensaje: "El campo nombre es requerido"
+ *             examples:
+ *               error:
+ *                 summary: Ejemplo de error de validación
+ *                 value:
+ *                   message: "Producto con el nombre Remera Basica ya esta en uso"
+ *               error2:
+ *                 summary: Otro ejemplo de error de validación
+ *                 value:
+ *                   - atributo: "nombre"
+ *                     mensaje: "\"nombre\" es obligatorio"
+ *                   - atributo: "a"
+ *                     mensaje: "\"a\" is not allowed"
  *       404:
  *         description: Producto no encontrado
  *         content:
@@ -232,7 +221,7 @@ router.put(
   updateProducto,
 );
 
-//3. Eliminar un producto por su ID VERIFICADO
+//3. Eliminar un producto por su ID VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/productos/{id}:
@@ -261,7 +250,7 @@ router.delete("/:id",
   deleteModel
 );
 
-//4. Obtener todos los productos VERIFICADO
+//4. Obtener todos los productos VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/productos:
@@ -280,22 +269,30 @@ router.delete("/:id",
  *             example:
  *               - id: 1
  *                 nombre: "Remera básica"
- *                 cantidad: 50
  *                 precio: 1200
- *                 color: { nombre: "Rojo" }
- *                 talle: { nombre: "M" }
- *                 tipoDePrenda: { nombre: "Remera" }
+ *                 stockProductos:
+ *                   - stock: 50
+ *                     color: { nombre: "Rojo" }
+ *                     talle: { nombre: "M" }
+ *                   - stock: 30
+ *                     color: { nombre: "Azul" }
+ *                     talle: { nombre: "L" }
+ *                 tipoDePrenda: { id: 1, nombre: "Camisa" }
  *               - id: 2
- *                 nombre: "Pantalón jean"
- *                 cantidad: 30
- *                 precio: 2500
- *                 color: { nombre: "Azul" }
- *                 talle: { nombre: "L" }
- *                 tipoDePrenda: { nombre: "Pantalón" }
+ *                 nombre: "Remera bási"
+ *                 precio: 1200
+ *                 stockProductos:
+ *                   - stock: 50
+ *                     color: { nombre: "Rojo" }
+ *                     talle: { nombre: "M" }
+ *                   - stock: 30
+ *                     color: { nombre: "Azul" }
+ *                     talle: { nombre: "L" }
+ *                 tipoDePrenda: { id: 1, nombre: "Camisa" }
  */
 router.get("/", getAllProductos);
 
-//5. Obtener un producto por su ID VERIFICADO
+//5. Obtener un producto por su ID VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/productos/{id}:
@@ -317,13 +314,17 @@ router.get("/", getAllProductos);
  *             schema:
  *               $ref: '#/components/schemas/Producto'
  *             example:
- *               id: 1
- *               nombre: "Remera básica"
- *               cantidad: 50
- *               precio: 1200
- *               color: { nombre: "Rojo" }
- *               talle: { nombre: "M" }
- *               tipoDePrenda: { nombre: "Remera" }
+ *               id: 3
+ *               nombre: "Rema"
+ *               precio: 10000
+ *               stockProductos:
+ *                 - stock: 50
+ *                   color: { nombre: "Rojo" }
+ *                   talle: { nombre: "M" }
+ *                 - stock: 30
+ *                   color: { nombre: "Azul" }
+ *                   talle: { nombre: "L" }
+ *               tipoDePrenda: { id: 3, nombre: "Remera dle" }
  *       404:
  *         description: Producto no encontrado
  *         content:
@@ -336,4 +337,48 @@ router.get("/:id",
   getProductoById
 );
 
+//6. Buscar un producto por nombre VERIFICADO SWAGGER DOCUMENTADO
+/**
+ * @swagger
+ * /api/productos/nombre/{nombre}:
+ *   get:
+ *     summary: Buscar un producto por nombre
+ *     tags: [Productos]
+ *     parameters:
+ *       - in: path
+ *         name: nombre
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Nombre del producto a buscar
+ *     responses:
+ *       200:
+ *         description: Producto encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Producto'
+ *             example:
+ *               id: 1
+ *               nombre: "Remera básica"
+ *               precio: 1200
+ *               stockProductos:
+ *                 - stock: 50
+ *                   color: { nombre: "Rojo" }
+ *                   talle: { nombre: "M" }
+ *                 - stock: 30
+ *                   color: { nombre: "Azul" }
+ *                   talle: { nombre: "L" }
+ *               tipoDePrenda: { id: 1, nombre: "Camisa" }
+ *       404:
+ *         description: No se encontró el producto con ese nombre
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Producto con nombre remera no existe"
+ */
+router.get("/nombre/:nombre", 
+  validateProductoByName, 
+  getProductoByName
+);
 module.exports = router;

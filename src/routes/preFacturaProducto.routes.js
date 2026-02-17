@@ -18,7 +18,7 @@ const {
  * @swagger
  * components:
  *   schemas:
- *     Producto:
+ *     ProductoPreFactura:
  *       type: object
  *       properties:
  *         productoId:

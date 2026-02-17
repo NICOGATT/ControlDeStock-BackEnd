@@ -1,10 +1,9 @@
 const joi = require("joi");
 
-const stringSchema = joi.string().min(1).required().messages({
+const stringSchema = joi.string().min(1).messages({
   "string.base": "El campo debe ser una cadena de texto",
   "string.empty": "El campo no puede estar vacío",
   "string.min": "El campo debe tener al menos 1 caracter",
-  "any.required": "El campo es obligatorio",
 });
 
 const colorYTalleSchema = joi.object({
@@ -41,24 +40,28 @@ const productoSchema = joi.object({
       "any.required": "El campo colorYTalle es obligatorio",
       "array.unique": "No se pueden repetir combinaciones de color y talle en el mismo producto",
     }),
-  nombre: joi.string().min(1).required().messages({
-    "string.base": "El nombre debe ser una cadena de texto",
-    "string.empty": "El nombre no puede estar vacío",
-    "string.min": "El nombre debe tener al menos 1 caracter",
-    "any.required": "El nombre es obligatorio",
+  nombre: stringSchema.required().label("nombre").messages({
+    "any.required": "El campo nombre es obligatorio",
   }),
   precio: joi.number().integer().min(1).required().messages({
     "number.base": "El precio debe ser un número",
     "number.integer": "El precio debe ser un número entero",
     "number.min": "El precio debe ser al menos 1",
-    "any.required": "El precio es obligatorio",
+    "any.required": "El campo precio es obligatorio",
   }),
-  tipoDePrenda: stringSchema.label("tipo de prenda"),
+  tipoDePrenda: stringSchema.required().label("nombre").messages({
+    "any.required": "El campo nombre es obligatorio",
+  })
 });
 
-const productoUpdateSchema = productoSchema.fork(
-  Object.keys(productoSchema.describe().keys),
-  (field) => field.optional(),
-);
+const productoUpdateSchema = joi.object({
+  nombre: stringSchema.label("nombre"),
+  precio: joi.number().integer().min(1).label("precio").messages({
+    "number.base": "El precio debe ser un número",
+    "number.integer": "El precio debe ser un número entero",
+    "number.min": "El precio debe ser al menos 1",
+  }),
+  tipoDePrenda: stringSchema.label("tipoDePrenda")
+})
 
 module.exports = { productoUpdateSchema, productoSchema };

@@ -49,65 +49,52 @@ const createProducto = async (req, res) => {
   return res.status(201).json(responseProducto);
 };
 
-//EDITAR CUANDO TERMINE STOCKPRODUCTO
 //2. Actualizar un producto por su ID
 const updateProducto = async (req, res) => {
   const { id } = req.params;
-  const { nombre, cantidad, precio, color, talle, tipoDePrenda } = req.body;
-
-  await Producto.update({ nombre, cantidad, precio }, { where: { id } });
-
+  const { nombre, cantidad, precio, tipoDePrenda } = req.body;
   const producto = await Producto.findByPk(id);
-
-  const promesas = [];
-
-  if (color) {
-    promesas.push(
-      asociarModelo(Color, color.nombre).then((color) =>
-        producto.setColor(color),
-      ),
-    );
+  
+  if (tipoDePrenda){
+    const prenda = await TipoDePrenda.findOrCreate({ where: { nombre: tipoDePrenda } });
+    await producto.setTipoDePrenda(prenda[0]);
   }
-
-  if (talle) {
-    promesas.push(
-      asociarModelo(Talle, talle.nombre).then((talle) =>
-        producto.setTalle(talle),
-      ),
-    );
-  }
-
-  if (tipoDePrenda) {
-    promesas.push(
-      asociarModelo(TipoDePrenda, tipoDePrenda.nombre).then((tipo) =>
-        producto.setTipoDePrenda(tipo),
-      ),
-    );
-  }
-
-  await Promise.all(promesas);
-
-  // Usar alias en include
-  return res.status(200).json(
-    await Producto.findByPk(id, {
-      include: [
-        { model: Color, as: "color" },
-        { model: Talle, as: "talle" },
-        { model: TipoDePrenda, as: "tipoDePrenda" },
-      ],
-    }),
+  
+  await Producto.update({ 
+    nombre, 
+    cantidad, 
+    precio,
+  }, 
+    { where: { id } }
   );
+
+  const responseProducto = await Producto.findByPk(id, {
+    attributes: ["id", "nombre", "precio"],
+    include: [
+      { model: TipoDePrenda, as: "tipoDePrenda" },
+    ],
+  })
+
+  return res.status(200).json(responseProducto);
 };
 
 //3. Eliminar un producto por su ID
 const deleteModel = genericControllers.deleteModel(Producto);
 
 //4. Obtener todos los productos
-const getAllProductos = async (req, res) => {
+const getAllProductos = async (_, res) => {
   const productos = await Producto.findAll({
+    attributes: ["id", "nombre", "precio"],
     include: [
-      { model: Color, as: "color" },
-      { model: Talle, as: "talle" },
+      {
+        model: StockProducto,
+        as: "stockProductos",
+        attributes: ["stock"],
+        include: [
+          { model: Color, as: "color", attributes: ["nombre"] },
+          { model: Talle, as: "talle", attributes: ["nombre"] },
+        ],
+      },
       { model: TipoDePrenda, as: "tipoDePrenda" },
     ],
   });
@@ -118,9 +105,39 @@ const getAllProductos = async (req, res) => {
 const getProductoById = async (req, res) => {
   const { id } = req.params;
   const producto = await Producto.findByPk(id, {
+    attributes: ["id", "nombre", "precio"],
     include: [
-      { model: Color, as: "color" },
-      { model: Talle, as: "talle" },
+      {
+        model: StockProducto,
+        as: "stockProductos",
+        attributes: ["stock"],
+        include: [
+          { model: Color, as: "color", attributes: ["nombre"] },
+          { model: Talle, as: "talle", attributes: ["nombre"] },
+        ],
+      },
+      { model: TipoDePrenda, as: "tipoDePrenda" },
+    ],
+  });
+  return res.status(200).json(producto);
+};
+
+//6. Buscar productos por nombre
+const getProductoByName = async (req, res) => {
+  const { nombre } = req.params;
+  const producto = await Producto.findOne({
+    where: { nombre },
+    attributes: ["id", "nombre", "precio"],
+    include: [
+      {
+        model: StockProducto,
+        as: "stockProductos",
+        attributes: ["stock"],
+        include: [
+          { model: Color, as: "color", attributes: ["nombre"] },
+          { model: Talle, as: "talle", attributes: ["nombre"] },
+        ],
+      },
       { model: TipoDePrenda, as: "tipoDePrenda" },
     ],
   });
@@ -133,4 +150,5 @@ module.exports = {
   deleteModel,
   getAllProductos,
   getProductoById,
+  getProductoByName
 };
