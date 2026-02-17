@@ -35,7 +35,7 @@ const {
  *         nombre: "Remera"
  */
 
-//1. Crear un nuevo tipo de prenda VERIFICADO
+//1. Crear un nuevo tipo de prenda VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/tipoDePrendas:
@@ -74,7 +74,14 @@ const {
  *               error:
  *                 summary: Ejemplo de error de validación
  *                 value:
- *                   message: "El campo nombre es requerido"
+ *                   message: "TipoDePrenda con el nombre Remera ya esta en uso"
+ *               error2:
+ *                 summary: Otro ejemplo de error de validación
+ *                 value:
+ *                   - atributo: "nombre"
+ *                     mensaje: "\"nombre\" es obligatorio"
+ *                   - atributo: "a"
+ *                     mensaje: "\"a\" is not allowed"
  */
 router.post(
   "/",
@@ -83,7 +90,7 @@ router.post(
   createTipoDePrenda,
 );
 
-//2. modificar un tipo de prenda existente VERIFICADO
+//2. modificar un tipo de prenda existente VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/tipoDePrendas/{id}:
@@ -119,11 +126,18 @@ router.post(
  *         description: Error de validación
  *         content:
  *           application/json:
- *             example:
- *               - atributo: "nombre"
- *                 mensaje: "\"nombre\" ya está en uso"
- *               - atributo: "nombre"
- *                 mensaje: "El campo nombre es requerido"
+ *             examples:
+ *               error:
+ *                 summary: Ejemplo de error de validación
+ *                 value:
+ *                   message: "TipoDePrenda con el nombre Remera ya esta en uso"
+ *               error2:
+ *                 summary: Otro ejemplo de error de validación
+ *                 value:
+ *                   - atributo: "nombre"
+ *                     mensaje: "\"nombre\" es obligatorio"
+ *                   - atributo: "a"
+ *                     mensaje: "\"a\" is not allowed"
  *       404:
  *         description: Tipo de prenda no encontrado
  *         content:
@@ -143,7 +157,7 @@ router.put(
   updateTipoDePrenda,
 );
 
-//3. eliminar un tipo de prenda VERIFICADO
+//3. eliminar un tipo de prenda VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/tipoDePrendas/{id}:
@@ -172,7 +186,7 @@ router.put(
  */
 router.delete("/:id", validateTipoDePrendaById, deleteTipoDePrenda);
 
-//4. obtener tipos de prendas VERIFICADO
+//4. obtener tipos de prendas VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/tipoDePrendas:
@@ -199,7 +213,7 @@ router.delete("/:id", validateTipoDePrendaById, deleteTipoDePrenda);
  */
 router.get("/", getAllTipoDePrendas);
 
-//5. obtener un tipo de prenda por id VERIFICADO
+//5. obtener un tipo de prenda por id VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/tipoDePrendas/{id}:
@@ -238,7 +252,7 @@ router.get("/", getAllTipoDePrendas);
  */
 router.get("/:id", validateTipoDePrendaById, getTipoDePrendaById);
 
-//6. obtener un tipo de prenda por nombre VERIFICADO
+//6. obtener un tipo de prenda por nombre VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/tipoDePrendas/nombre/{nombre}:
