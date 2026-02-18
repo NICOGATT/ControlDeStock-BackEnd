@@ -5,6 +5,7 @@ module.exports = {
     await queryInterface.createTable('PreFacturaProductos', {
       preFacturaId: {
         type: Sequelize.INTEGER,
+        primaryKey: true,
         references: {
           model: 'PreFacturas',
           key: 'id'
@@ -14,6 +15,7 @@ module.exports = {
       },
       productoId: {
         type: Sequelize.INTEGER,
+        primaryKey: true,
         references: {
           model: 'Productos',
           key: 'id'
@@ -23,6 +25,7 @@ module.exports = {
       },
       talleId: {
         type: Sequelize.INTEGER,
+        primaryKey: true,
         references: {
           model: 'Talles',
           key: 'id'
@@ -32,6 +35,7 @@ module.exports = {
       },
       colorId: {
         type: Sequelize.INTEGER,
+        primaryKey: true,
         references: {
           model: 'Colores',
           key: 'id'

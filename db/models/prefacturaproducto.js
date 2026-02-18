@@ -31,24 +31,28 @@ module.exports = (sequelize, DataTypes) => {
       preFacturaId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        primaryKey: true,
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
       productoId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        primaryKey: true,
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
       talleId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        primaryKey: true,
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
       colorId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        primaryKey: true,
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },

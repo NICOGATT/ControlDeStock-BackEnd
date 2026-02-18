@@ -15,10 +15,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'clienteId',
         as: 'cliente'
       });
-      PreFactura.belongsToMany(models.Producto, {
-        through: 'PreFacturaProducto',
+      PreFactura.hasMany(models.PreFacturaProducto, {
         foreignKey: 'preFacturaId',
-        otherKey: 'productoId',
         as: 'productos'
       });
     }

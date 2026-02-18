@@ -7,10 +7,13 @@ const {
   validatePreFacturaProductoNonExistence
 } = require("../middlewares/preFacturaProducto.middleware");
 const {
+  validatePreFacturaById 
+} = require("../middlewares/preFactura.middleware");
+const {
   addProductsToPreFactura,
   editPreFacturaProducto,
   deletePreFacturaProducto,
-  getProductsFromPreFactura,
+  getPreFacturaWithProducts,
   getAllPreFacturasWithProducts
 } = require("../controllers/preFacturaProducto.controller");
 
@@ -24,14 +27,24 @@ const {
  *         productoId:
  *           type: integer
  *           description: ID del producto
+ *         talleId:
+ *           type: integer
+ *           description: ID del talle
+ *         colorId:
+ *           type: integer
+ *           description: ID del color
  *         cantidad:
  *           type: integer
  *           description: Cantidad del producto
  *       required:
  *         - productoId
+ *         - talleId
+ *         - colorId
  *         - cantidad
  *       example:
  *         productoId: 1
+ *         talleId: 1
+ *         colorId: 1
  *         cantidad: 5
  *     PreFacturaProducto:
  *       type: object
@@ -57,7 +70,7 @@ const {
  *         cantidad: 5
  */
 
-//1. Agregar productos a una prefactura VERIFICADO
+//1. Agregar productos a una prefactura VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/preFacturaProductos:
@@ -81,12 +94,22 @@ const {
  *                       type: integer
  *                       description: ID del producto (mínimo 1)
  *                       minimum: 1
+ *                     talleId:
+ *                       type: integer
+ *                       description: ID del talle (mínimo 1)
+ *                       minimum: 1
+ *                     colorId:
+ *                       type: integer
+ *                       description: ID del color (mínimo 1)
+ *                       minimum: 1
  *                     cantidad:
  *                       type: integer
  *                       description: Cantidad del producto (mínimo 1)
  *                       minimum: 1
  *                   required:
  *                     - productoId
+ *                     - talleId
+ *                     - colorId
  *                     - cantidad
  *               preFacturaId:
  *                 type: integer
@@ -98,8 +121,12 @@ const {
  *             example:
  *               productos:
  *                 - productoId: 1
+ *                   talleId: 1
+ *                   colorId: 1
  *                   cantidad: 1
  *                 - productoId: 2
+ *                   talleId: 1
+ *                   colorId: 1
  *                   cantidad: 1
  *               preFacturaId: 1
  *     responses:
@@ -108,14 +135,38 @@ const {
  *         content:
  *           application/json:
  *             example:
+ *               preFactura:
+ *                 id: 1
+ *                 fecha: "2026-02-18T19:07:11.000Z"
+ *                 clienteId: 1
  *               productos:
- *                 - productoId: 1
- *                   cantidad: 1
- *                 - productoId: 2
- *                   cantidad: 1
- *               preFacturaId: 1
+ *                 - cantidad: 1
+ *                   producto:
+ *                     id: 1
+ *                     nombre: "Remera básica"
+ *                   color:
+ *                     id: 1
+ *                     nombre: "Rojo"
+ *                   talle:
+ *                     id: 1
+ *                     nombre: "M"
+ *                 - cantidad: 1
+ *                   producto:
+ *                     id: 1
+ *                     nombre: "Remera básica"
+ *                   color:
+ *                     id: 2
+ *                     nombre: "Azul"
+ *                   talle:
+ *                     id: 1
+ *                     nombre: "M"
  *       400:
  *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             example:
+ *               - atributo: productos
+ *                 mensaje: No se pueden repetir productos en una misma prefactura
  */
 router.post(
   "/",
@@ -124,14 +175,14 @@ router.post(
   addProductsToPreFactura
 );
 
-//2. Editar productos de una prefactura por ID VERIFICADO
+//2. Editar productos de una prefactura por ID VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/preFacturaProductos:
  *   put:
  *     summary: Editar productos de una prefactura
  *     tags: [PreFacturaProducto]
-*     requestBody:
+ *     requestBody:
  *       required: true
  *       content:
  *         application/json:
@@ -148,12 +199,22 @@ router.post(
  *                       type: integer
  *                       description: ID del producto (mínimo 1)
  *                       minimum: 1
+ *                     talleId:
+ *                       type: integer
+ *                       description: ID del talle (mínimo 1)
+ *                       minimum: 1
+ *                     colorId:
+ *                       type: integer
+ *                       description: ID del color (mínimo 1)
+ *                       minimum: 1
  *                     cantidad:
  *                       type: integer
  *                       description: Cantidad del producto (mínimo 1)
  *                       minimum: 1
  *                   required:
  *                     - productoId
+ *                     - talleId
+ *                     - colorId
  *                     - cantidad
  *               preFacturaId:
  *                 type: integer
@@ -165,8 +226,12 @@ router.post(
  *             example:
  *               productos:
  *                 - productoId: 1
+ *                   talleId: 1
+ *                   colorId: 1
  *                   cantidad: 10
  *                 - productoId: 2
+ *                   talleId: 1
+ *                   colorId: 1
  *                   cantidad: 5
  *               preFacturaId: 1
  *     responses:
@@ -183,6 +248,18 @@ router.post(
  *                 cantidad: 12
  *       400:
  *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             examples:
+ *               productoNoAsociado:
+ *                 summary: Producto no asociado a la prefactura
+ *                 value:
+ *                   message: "El producto Remera de color Rojo y talle M no esta asociado a la prefactura."
+ *               productosRepetidos:
+ *                 summary: Productos repetidos
+ *                 value:
+ *                   - atributo: productos
+ *                     mensaje: "No se pueden repetir productos en una misma prefactura"
  */
 router.put(
   "/",
@@ -191,14 +268,14 @@ router.put(
   editPreFacturaProducto
 );
 
-//3. Eliminar productos de una prefactura por ID VERIFICADO
+//3. Eliminar productos de una prefactura por ID VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/preFacturaProductos:
  *   delete:
  *     summary: Eliminar productos de una prefactura
  *     tags: [PreFacturaProducto]
-*     requestBody:
+ *     requestBody:
  *       required: true
  *       content:
  *         application/json:
@@ -215,9 +292,18 @@ router.put(
  *                       type: integer
  *                       description: ID del producto (mínimo 1)
  *                       minimum: 1
+ *                     talleId:
+ *                       type: integer
+ *                       description: ID del talle (mínimo 1)
+ *                       minimum: 1
+ *                     colorId:
+ *                       type: integer
+ *                       description: ID del color (mínimo 1)
+ *                       minimum: 1
  *                   required:
  *                     - productoId
- *                     - cantidad
+ *                     - talleId
+ *                     - colorId
  *               preFacturaId:
  *                 type: integer
  *                 description: ID de la prefactura (mínimo 1)
@@ -228,17 +314,29 @@ router.put(
  *             example:
  *               productos:
  *                 - productoId: 1
- *                 - productoId: 2
+ *                   talleId: 1
+ *                   colorId: 1
+ *                 - productoId: 1
+ *                   talleId: 2
+ *                   colorId: 2
  *               preFacturaId: 1
  *     responses:
- *       200:
+ *       204:
  *         description: Productos eliminados correctamente
- *         content:
- *           application/json:
- *             example:
- *               message: "Productos eliminados correctamente."
  *       400:
  *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             examples:
+ *               productoNoAsociado:
+ *                 summary: Producto no asociado a la prefactura
+ *                 value:
+ *                   message: "El producto Remera de color Rojo y talle M no esta asociado a la prefactura."
+ *               productosRepetidos:
+ *                 summary: Productos repetidos
+ *                 value:
+ *                   - atributo: productos
+ *                     mensaje: "No se pueden repetir productos en una misma prefactura"
  */
 router.delete(
   "/",
@@ -248,7 +346,7 @@ router.delete(
 );
 
 
-//4. Obtener todas las prefacturas con sus productos
+//4. Obtener todas las prefacturas con sus productos VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/preFacturaProductos:
@@ -261,49 +359,96 @@ router.delete(
  *         content:
  *           application/json:
  *             example:
- *               - preFacturaId: 1
+ *               - id: 2
+ *                 fecha: "2026-02-18T19:07:11.000Z"
+ *                 cliente:
+ *                   id: 1
+ *                   nombre: "Juan Perez"
  *                 productos:
- *                   - productoId: 1
- *                     cantidad: 5
- *                   - productoId: 2
- *                     cantidad: 3
- *               - preFacturaId: 2
- *                 productos:
- *                   - productoId: 3
- *                     cantidad: 2
+ *                   - cantidad: 5
+ *                     producto:
+ *                       id: 1
+ *                       nombre: "Remera básica"
+ *                       precio: 1200
+ *                     color:
+ *                       id: 2
+ *                       nombre: "Azul"
+ *                     talle:
+ *                       id: 1
+ *                       nombre: "M"
+ *                   - cantidad: 10
+ *                     producto:
+ *                       id: 1
+ *                       nombre: "Remera básica"
+ *                       precio: 1200
+ *                     color:
+ *                       id: 1
+ *                       nombre: "Rojo"
+ *                     talle:
+ *                       id: 1
+ *                       nombre: "M"
  */
 router.get("/", getAllPreFacturasWithProducts);
 
-//5. Obtener productos de una prefactura
+//5. Obtener productos de una prefactura VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
- * /api/preFacturaProductos/prefactura/{preFacturaId}/productos:
+ * /api/preFacturaProductos/prefactura/{id}:
  *   get:
- *     summary: Obtener productos de una prefactura
+ *     summary: Obtener una prefactura con sus productos
  *     tags: [PreFacturaProducto]
  *     parameters:
  *       - in: path
- *         name: preFacturaId
+ *         name: id
  *         schema:
  *           type: integer
  *         required: true
  *         description: ID de la prefactura
  *     responses:
  *       200:
- *         description: Lista de productos de la prefactura
+ *         description: Prefactura con sus productos
  *         content:
  *           application/json:
  *             example:
- *               preFacturaId: 1
+ *               id: 2
+ *               fecha: "2026-02-18T19:07:11.000Z"
+ *               cliente:
+ *                 id: 1
+ *                 nombre: "Juan Perez"
  *               productos:
- *                 - productoId: 1
- *                   cantidad: 5
- *                 - productoId: 2
- *                   cantidad: 3
+ *                 - cantidad: 10
+ *                   producto:
+ *                     id: 1
+ *                     nombre: "Remera básica"
+ *                     precio: 1200
+ *                   color:
+ *                     id: 1
+ *                     nombre: "Rojo"
+ *                   talle:
+ *                     id: 1
+ *                     nombre: "M"
+ *                 - cantidad: 5
+ *                   producto:
+ *                     id: 1
+ *                     nombre: "Remera básica"
+ *                     precio: 1200
+ *                   color:
+ *                     id: 2
+ *                     nombre: "Azul"
+ *                   talle:
+ *                     id: 1
+ *                     nombre: "M"
  *       404:
  *         description: Prefactura no encontrada
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "PreFactura con id 1 no existe."
  */
-router.get("/prefactura/:preFacturaId/productos", getProductsFromPreFactura);
+router.get("/prefactura/:id", 
+  validatePreFacturaById,
+  getPreFacturaWithProducts
+);
 
 
 
