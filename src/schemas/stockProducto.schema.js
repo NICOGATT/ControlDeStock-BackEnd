@@ -1,4 +1,5 @@
 const joi = require('joi');
+const { colorYTalleSchema } = require('./producto.schema');
 
 const numberSchema = joi.number().integer().min(0).required().messages({
   'number.base': 'La cantidad debe ser un número',
@@ -7,26 +8,11 @@ const numberSchema = joi.number().integer().min(0).required().messages({
   'any.required': 'La cantidad es requerida',
 });
 
-const colorYTalleSchema = joi.object({
-  colorId: numberSchema.min(1).messages({
-    'number.min': 'El colorId debe ser al menos 1',
-  }),
-  talleId: numberSchema.min(1).messages({
-    'number.min': 'El talleId debe ser al menos 1',
-  }),
-  cantidad: numberSchema,
-});
-
-const createStockProductoSchema = joi.object({
-  coloresYTalles: joi
-    .array()
-    .items(colorYTalleSchema)
-    .min(1)
-    .required()
-    .custom((value, helpers) => {
+const arrayOfColorYTalleSchema = (schema) => joi.array().items(schema).min(1).required()
+  .custom((value, helpers) => {
       const seen = new Set();
       for (const item of value) {
-        const key = `${item.colorId}-${item.talleId}`;
+        const key = `${item.color}-${item.talle}`;
         if (seen.has(key)) {
           return helpers.error("array.unique", { key });
         }
@@ -38,9 +24,31 @@ const createStockProductoSchema = joi.object({
       'array.base': 'coloresYTalles debe ser un arreglo',
       'array.min': 'coloresYTalles debe tener al menos 1 elemento',
       'any.required': 'coloresYTalles es obligatorio',
-      'array.unique': 'Los elementos de coloresYTalles deben ser únicos por colorId y talleId',
-    }),
+      'array.unique': 'No se permiten combinaciones repetidas de color y talle',
+    });
+
+
+const createStockProductoSchema = joi.object({
+  coloresYTalles: arrayOfColorYTalleSchema(colorYTalleSchema),
   productoId: numberSchema,
 });
 
-module.exports = { createStockProductoSchema, colorYTalleSchema };
+const updateColorYTalleSchema = joi.object({
+  color: joi.string().min(1).required().messages({
+    'string.base': 'El color debe ser una cadena de texto',
+    'any.required': 'El color es requerido',
+    "string.min": 'El color no puede estar vacío',
+  }),
+  talle: joi.string().min(1).required().messages({
+    'string.base': 'El color debe ser una cadena de texto',
+    'any.required': 'El color es requerido',
+    "string.min": 'El color no puede estar vacío',
+  })
+});
+
+const updateStockProductoSchema = joi.object({
+  coloresYTalles: arrayOfColorYTalleSchema(colorYTalleSchema),
+  productoId: numberSchema,
+});
+
+module.exports = { createStockProductoSchema, colorYTalleSchema, updateStockProductoSchema };

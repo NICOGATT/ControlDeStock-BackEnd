@@ -64,4 +64,4 @@ const productoUpdateSchema = joi.object({
   tipoDePrenda: stringSchema.label("tipoDePrenda")
 })
 
-module.exports = { productoUpdateSchema, productoSchema };
+module.exports = { productoUpdateSchema, productoSchema, colorYTalleSchema };
