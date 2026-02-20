@@ -10,6 +10,11 @@ const {
   validatePreFacturaById 
 } = require("../middlewares/preFactura.middleware");
 const {
+  validateStockProductoQuantity,
+  validateStockProductoUpdateQuantity,
+  validateStockProductoExistsByIds
+} = require("../middlewares/stockProducto.middleware");
+const {
   addProductsToPreFactura,
   editPreFacturaProducto,
   deletePreFacturaProducto,
@@ -172,6 +177,8 @@ router.post(
   "/",
   validatePreFacturaProductoSchema,
   validatePreFacturaProductoNonExistence,
+  validateStockProductoExistsByIds,
+  validateStockProductoQuantity,
   addProductsToPreFactura
 );
 
@@ -240,12 +247,31 @@ router.post(
  *         content:
  *           application/json:
  *             example:
- *               - preFacturaId: 1
- *                 productoId: 2
- *                 cantidad: 8
- *               - preFacturaId: 1
- *                 productoId: 3
- *                 cantidad: 12
+ *               preFactura:
+ *                 id: 1
+ *                 fecha: "2026-02-20T19:42:38.000Z"
+ *                 clienteId: 1
+ *               productos:
+ *                 - cantidad: 10
+ *                   producto:
+ *                     id: 1
+ *                     nombre: "Remera básica"
+ *                   color:
+ *                     id: 3
+ *                     nombre: "Amarillo"
+ *                   talle:
+ *                     id: 1
+ *                     nombre: "M"
+ *                 - cantidad: 5
+ *                   producto:
+ *                     id: 2
+ *                     nombre: "Remera"
+ *                   color:
+ *                     id: 1
+ *                     nombre: "Rojo"
+ *                   talle:
+ *                     id: 1
+ *                     nombre: "M"
  *       400:
  *         description: Error de validación
  *         content:
@@ -265,6 +291,8 @@ router.put(
   "/",
   validatePreFacturaProductoSchema,
   validatePreFacturaProductoExistence,
+  validateStockProductoExistsByIds,
+  validateStockProductoUpdateQuantity,
   editPreFacturaProducto
 );
 
@@ -342,6 +370,7 @@ router.delete(
   "/",
   validatePreFacturaProductoDeleteSchema,
   validatePreFacturaProductoExistence,
+  validateStockProductoExistsByIds,
   deletePreFacturaProducto
 );
 

@@ -1,18 +1,27 @@
-const { PreFacturaProducto, Producto, PreFactura, Color, Talle ,Cliente} = require("../../db/models");
+const { PreFacturaProducto, Producto, PreFactura, Color, Talle ,Cliente, StockProducto} = require("../../db/models");
 
 //1. Agregar productos a una prefactura
 const addProductsToPreFactura = async (req, res) => {
   const { productos, preFacturaId } = req.body;
   
-  const promesas = productos.map((elemento) =>
-    PreFacturaProducto.create({
+  const promesas = productos.map(async (elemento) => {
+    await PreFacturaProducto.create({
       preFacturaId,
       productoId: elemento.productoId,
       talleId: elemento.talleId,
       colorId: elemento.colorId,
       cantidad: elemento.cantidad,
-    })
-  );
+    });
+    
+    await StockProducto.decrement(
+      { stock: elemento.cantidad },
+      { where: {
+        productoId: elemento.productoId,
+        talleId: elemento.talleId,
+        colorId: elemento.colorId,
+      }}
+    );
+  });
 
   await Promise.all(promesas);
 
@@ -51,14 +60,41 @@ const editPreFacturaProducto = async (req, res) => {
 
   const promesas = productos.map(async (producto) => {
     const { productoId, colorId, talleId, cantidad } = producto;
-
-    await PreFacturaProducto.update({
-      cantidad,
-    }, {
+    const productoPreFactura = await PreFacturaProducto.findOne({
       where: { preFacturaId, productoId, colorId, talleId },
     });
-  });
+    const diferencia = cantidad - productoPreFactura.cantidad;
 
+    if (diferencia > 0) {
+      // Nueva cantidad es MAYOR → necesita más productos → decrement stock
+      await StockProducto.decrement(
+      { stock: diferencia },
+      { where: {
+        productoId: productoId,
+        talleId: talleId,
+        colorId: colorId,
+      }}
+    );
+    } else if (diferencia < 0) {
+      // Nueva cantidad es MENOR → necesita menos productos → increment stock
+      await StockProducto.increment(
+      { stock: Math.abs(diferencia) },
+      { where: {
+        productoId: productoId,
+        talleId: talleId,
+        colorId: colorId,
+      }}
+    );
+    }
+
+    if (diferencia !== 0) {
+      await PreFacturaProducto.update(
+        { cantidad },
+        { where: { preFacturaId, productoId, colorId, talleId } }
+      )
+    }
+  });
+  
   await Promise.all(promesas);
 
   const productosPreFactura = await PreFacturaProducto.findAll({
@@ -84,7 +120,7 @@ const editPreFacturaProducto = async (req, res) => {
 
   })
 
-  res.status(201).json({
+  res.status(200).json({
     preFactura: await PreFactura.findByPk(preFacturaId),
     productos: productosPreFactura
   });
@@ -96,6 +132,18 @@ const deletePreFacturaProducto = async (req, res) => {
 
   const promesas = productos.map(async (producto) => {
     const { productoId, talleId, colorId } = producto;
+    const productoPreFactura = await PreFacturaProducto.findOne({
+      where: { preFacturaId, productoId, colorId, talleId },
+    });
+    
+    await StockProducto.increment(
+      { stock: productoPreFactura.cantidad },
+      { where: {
+        productoId: productoId,
+        talleId: talleId,
+        colorId: colorId,
+      }}
+    );
 
     await PreFacturaProducto.destroy({
       where: { preFacturaId, productoId, talleId, colorId },

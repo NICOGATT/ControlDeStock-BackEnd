@@ -1,5 +1,5 @@
 const { preFacturaSchema, dateSchema } = require("../schemas/preFactura.schema");
-const { PreFactura, Cliente } = require("../../db/models");
+const { PreFactura } = require("../../db/models");
 const genericValidations = require("./genericValidations");
 const genericSchemaValidator = require("../schemas/genericSchemaValidator");
 const mapErrors = require("./mapErrors");
