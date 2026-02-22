@@ -1,7 +1,15 @@
-const { Cliente } = require('../../db/models');
+const { Cliente, Direccion } = require('../../db/models');
 const genericController = require('./generic.controller');
 //1. Crear un nuevo cliente
-const createCliente = genericController.createModel(Cliente);
+const createCliente = async (req, res) => {
+  const { nombre, telefono, direccion } = req.body;
+  const newCliente = await Cliente.create({ nombre, telefono });
+  const newDireccion = await Direccion.create({ direccion, clienteId: newCliente.id });
+  return res.status(201).json({
+    ...newCliente.toJSON(),
+    direccion: newDireccion.direccion
+  });
+}
 
 //2. Modificar un cliente existente
 const updateCliente = async (req, res) => {

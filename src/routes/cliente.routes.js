@@ -8,6 +8,9 @@ const {
   validateClienteName
 } = require("../middlewares/cliente.middleware");
 const {
+  validateDireccionNonExists,
+} = require("../middlewares/direccion.middleware");
+const {
   createCliente,
   updateCliente,
   deleteCliente,
@@ -31,9 +34,14 @@ const {
  *           type: string
  *           description: Teléfono del cliente (10 dígitos)
  *           example: "1123456789"
+ *         direccion:
+ *           type: string
+ *           description: Dirección del cliente
+ *           example: "Av. Libertad 123"
  *       required:
  *         - nombre
  *         - telefono
+ *         - direccion
  */
 
 //1. Crear un nuevo cliente VERIFICADO SWAGGER DOCUMENTADO
@@ -52,6 +60,7 @@ const {
  *           example:
  *             nombre: "Juan Perez"
  *             telefono: "1123456789"
+ *             direccion: "Av. Libertad 123"
  *     responses:
  *       201:
  *         description: Cliente creado exitosamente
@@ -63,6 +72,7 @@ const {
  *               id: 1
  *               nombre: "Juan Perez"
  *               telefono: "1123456789"
+ *               direccion: "Av. Libertad 123"
  *       400:
  *         description: Error de validación
  *         content:
@@ -82,7 +92,8 @@ const {
  */
 router.post('/',
   validateClienteSchema,
-  validateClienteName, 
+  validateClienteName,
+  validateDireccionNonExists, 
   createCliente
 );
 
