@@ -6,7 +6,6 @@ const {
   validateDate,
   validateCliente
 } = require('../middlewares/preFactura.middleware');
-
 const {
   createPreFactura,
   deletePreFacturaById,
@@ -62,10 +61,18 @@ const {
  *                 description: Nombre del cliente asociado a la preFactura
  *               telefono:
  *                 type: string
- *                 description: Teléfono del cliente asociado a la preFactura
+ *                 description: Teléfono del cliente asociado a la preFactura (10 dígitos)
+ *               direccion:
+ *                 type: string
+ *                 description: Dirección del cliente
+ *             required:
+ *               - cliente
+ *               - telefono
+ *               - direccion
  *           example:
  *             cliente: "Juan Perez"
  *             telefono: "1234567890"
+ *             direccion: "Av. Libertad 123"
  *     responses:
  *       201:
  *         description: PreFactura creada exitosamente
@@ -74,9 +81,12 @@ const {
  *             schema:
  *               $ref: '#/components/schemas/PreFactura'
  *             example:
- *               id: 1
- *               cliente: "Juan Perez"
- *               fecha: "2024-06-01T12:00:00.000Z"
+ *               id: 3
+ *               cliente:
+ *                 nombre: "Juan Perez"
+ *                 telefono: "1234567890"
+ *               fecha: "2026-02-22T01:33:50.000Z"
+ *               direccion: "Av. Libertad 1234"
  *       400:
  *         description: Error de validación
  *         content:
@@ -84,8 +94,8 @@ const {
  *             example:
  *               - atributo: "cliente"
  *                 mensaje: "El cliente es obligatorio"
- *               - atributo: "a"
- *                 mensaje: "\"a\" is not allowed"
+ *               - atributo: "direccion"
+ *                 mensaje: "La dirección es obligatoria"
  */
 router.post('/',
   validatePreFacturaSchema,

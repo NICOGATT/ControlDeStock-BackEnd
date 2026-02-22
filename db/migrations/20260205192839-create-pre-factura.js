@@ -22,6 +22,13 @@ module.exports = {
           model: 'Clientes',
           key: 'id'
         },
+      },
+      direccionId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Direcciones',
+          key: 'id'
+        },
       }
     });
   },

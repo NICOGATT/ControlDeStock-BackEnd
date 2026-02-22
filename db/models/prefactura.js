@@ -19,10 +19,17 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'preFacturaId',
         as: 'productos'
       });
+      PreFactura.belongsTo(models.Direccion, {
+        foreignKey: 'direccionId',
+        as: 'direccion'
+      });
     }
   }
   PreFactura.init({
-    fecha: DataTypes.DATE
+    fecha: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
   }, {
     sequelize,
     modelName: 'PreFactura',

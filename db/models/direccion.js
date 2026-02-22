@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
           as: "cliente"
         }
       );
+      Direccion.hasMany(models.PreFactura, {
+        foreignKey: "direccionId",
+        as: "prefacturas"
+      });
     }
   }
   Direccion.init(

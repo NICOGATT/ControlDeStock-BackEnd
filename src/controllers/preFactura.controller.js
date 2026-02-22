@@ -1,22 +1,37 @@
-const { PreFactura, Cliente } = require("../../db/models");
+const { PreFactura, Cliente, Direccion } = require("../../db/models");
 const genericController = require("./generic.controller");
 const { Op } = require("sequelize");
 
 //1. Crear una nueva preFactura
 const createPreFactura = async (req, res) => {
-  const { cliente, telefono } = req.body;
+  const { cliente, telefono, direccion } = req.body;
+  
   const newPreFactura = await PreFactura.create({
     fecha: new Date(),
   });
 
-  await Cliente.findOrCreate({
+  const [clienteInstance] = await Cliente.findOrCreate({
     where: { nombre: cliente, telefono },
-  }).then(([cliente, created]) => {
-    newPreFactura.setCliente(cliente);
-    newPreFactura.reload();
   });
 
-  res.status(201).json(newPreFactura);
+  const [direccionInstance] = await Direccion.findOrCreate({
+    where: { direccion },
+    defaults: { clienteId: clienteInstance.id }
+  });
+
+  await newPreFactura.setCliente(clienteInstance);
+  await newPreFactura.setDireccion(direccionInstance);
+  await newPreFactura.reload();
+
+  res.status(201).json({
+    id: newPreFactura.id,
+    cliente: {
+      nombre: clienteInstance.nombre,
+      telefono: clienteInstance.telefono
+    },
+    fecha: newPreFactura.fecha,
+    direccion: direccionInstance.direccion,
+  });
 };
 
 //2. Eliminar una preFactura por ID
