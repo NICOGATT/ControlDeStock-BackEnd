@@ -5,7 +5,8 @@ const {
   validateProductoUpdateSchema,
   validateProductoById,
   validateProductoName,
-  validateProductoByName
+  validateProductoByName,
+  validateProductId
 } = require("../middlewares/producto.middleware");
 const {
   createProducto,
@@ -28,9 +29,9 @@ const {
  *         - precio
  *       properties:
  *         id:
- *           type: integer
- *           description: ID autogenerado del producto
- *           example: 1
+ *           type: string
+ *           description: ID único del producto con formato RPPRO XX-XX
+ *           example: "RPPRO 01-23"
  *         nombre:
  *           type: string
  *           description: Nombre del producto
@@ -40,10 +41,10 @@ const {
  *           description: Precio del producto
  *           example: 1200
  *         tipoDePrendaId:
- *           type: integer
+ *           type: string
  *           nullable: true
  *           description: ID del tipo de prenda asociado
- *           example: 1
+ *           example: "tipo123"
  */
 
 //1. Crear un nuevo producto VERIFICADO SWAGGER DOCUMENTADO
@@ -60,11 +61,16 @@ const {
  *           schema:
  *             type: object
  *             required:
+ *               - id
  *               - nombre
  *               - precio
  *               - colorYTalle
  *               - tipoDePrenda
  *             properties:
+ *               id:
+ *                 type: string
+ *                 description: ID único del producto con formato RPPRO XX-XX
+ *                 example: "RPPRO 01-23"
  *               nombre:
  *                 type: string
  *                 description: Nombre del producto
@@ -100,6 +106,7 @@ const {
  *                 description: Tipo de prenda del producto
  *                 example: "Camisa"
  *           example:
+ *             id: "RPPRO 01-23"
  *             nombre: "Remera básica"
  *             precio: 1200
  *             colorYTalle:
@@ -118,13 +125,24 @@ const {
  *             schema:
  *               $ref: '#/components/schemas/Producto'
  *             example:
- *               id: 1
+ *               id: "RPPRO 01-23"
  *               nombre: "Remera básica"
- *               cantidad: 50
  *               precio: 1200
- *               color: { nombre: "Rojo" }
- *               talle: { nombre: "M" }
- *               tipoDePrenda: { nombre: "Remera" }
+ *               tipoDePrendaId: 1
+ *               stockProductos:
+ *                 - stock: 50
+ *                   color:
+ *                     nombre: "Rojo"
+ *                   talle:
+ *                     nombre: "M"
+ *                 - stock: 30
+ *                   color:
+ *                     nombre: "Azul"
+ *                   talle:
+ *                     nombre: "L"
+ *               tipoDePrenda:
+ *                 id: 1
+ *                 nombre: "Camisa"
  *       400:
  *         description: Error de validación
  *         content:
@@ -133,17 +151,18 @@ const {
  *               error:
  *                 summary: Ejemplo de error de validación
  *                 value:
- *                   message: "Producto con el nombre Remera Basica ya esta en uso"
+ *                   message: "Producto con el nombre Remera Básica ya está en uso"
  *               error2:
  *                 summary: Otro ejemplo de error de validación
  *                 value:
  *                   - atributo: "nombre"
  *                     mensaje: "\"nombre\" es obligatorio"
- *                   - atributo: "a"
- *                     mensaje: "\"a\" is not allowed"
+ *                   - atributo: "precio"
+ *                     mensaje: "\"precio\" debe ser un número entero"
  */
 router.post("/", 
   validateProductoSchema, 
+  validateProductId,
   validateProductoName, 
   createProducto
 );
@@ -159,9 +178,10 @@ router.post("/",
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
+ *           description: ID único del producto con formato RPPRO XX-XX
  *         required: true
- *         description: ID del producto
+ *         example: "RPPRO 01-23"
  *     requestBody:
  *       required: true
  *       content:
@@ -180,16 +200,12 @@ router.post("/",
  *             schema:
  *               $ref: '#/components/schemas/Producto'
  *             example:
- *               id: 1
- *               nombre: "Remera básica"
- *               cantidad: 100
- *               precio: 1500
- *               color:
- *                 nombre: "Azul"
- *               talle:
- *                 nombre: "L"
+ *               id: "RPPRO 01-23"
+ *               nombre: "Remera"
+ *               precio: 100
  *               tipoDePrenda:
- *                 nombre: "Camisa"
+ *                 id: 2
+ *                 nombre: "Remera doble"
  *       400:
  *         description: Error de validación
  *         content:
@@ -232,9 +248,10 @@ router.put(
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
+ *           description: ID único del producto con formato RPPRO XX-XX
  *         required: true
- *         description: ID del producto
+ *         example: "RPPRO 01-23"
  *     responses:
  *       204:
  *         description: Producto eliminado exitosamente
@@ -259,7 +276,7 @@ router.delete("/:id",
  *     tags: [Productos]
  *     responses:
  *       200:
- *         description: Lista de productos
+ *         description: Lista de productos obtenida exitosamente
  *         content:
  *           application/json:
  *             schema:
@@ -267,28 +284,40 @@ router.delete("/:id",
  *               items:
  *                 $ref: '#/components/schemas/Producto'
  *             example:
- *               - id: 1
+ *               - id: "RPPRO 01-22"
+ *                 nombre: "Remera básia"
+ *                 precio: 1200
+ *                 stockProductos:
+ *                   - stock: 30
+ *                     color:
+ *                       nombre: "Azul"
+ *                     talle:
+ *                       nombre: "L"
+ *                   - stock: 50
+ *                     color:
+ *                       nombre: "Rojo"
+ *                     talle:
+ *                       nombre: "M"
+ *                 tipoDePrenda:
+ *                   id: 1
+ *                   nombre: "Camisa"
+ *               - id: "RPPRO 01-23"
  *                 nombre: "Remera básica"
  *                 precio: 1200
  *                 stockProductos:
- *                   - stock: 50
- *                     color: { nombre: "Rojo" }
- *                     talle: { nombre: "M" }
  *                   - stock: 30
- *                     color: { nombre: "Azul" }
- *                     talle: { nombre: "L" }
- *                 tipoDePrenda: { id: 1, nombre: "Camisa" }
- *               - id: 2
- *                 nombre: "Remera bási"
- *                 precio: 1200
- *                 stockProductos:
+ *                     color:
+ *                       nombre: "Azul"
+ *                     talle:
+ *                       nombre: "L"
  *                   - stock: 50
- *                     color: { nombre: "Rojo" }
- *                     talle: { nombre: "M" }
- *                   - stock: 30
- *                     color: { nombre: "Azul" }
- *                     talle: { nombre: "L" }
- *                 tipoDePrenda: { id: 1, nombre: "Camisa" }
+ *                     color:
+ *                       nombre: "Rojo"
+ *                     talle:
+ *                       nombre: "M"
+ *                 tipoDePrenda:
+ *                   id: 1
+ *                   nombre: "Camisa"
  */
 router.get("/", getAllProductos);
 
@@ -303,28 +332,35 @@ router.get("/", getAllProductos);
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
+ *           description: ID único del producto con formato RPPRO XX-XX
  *         required: true
- *         description: ID del producto
+ *         example: "RPPRO 01-23"
  *     responses:
  *       200:
- *         description: Producto encontrado
+ *         description: Producto obtenido exitosamente
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Producto'
  *             example:
- *               id: 3
- *               nombre: "Rema"
- *               precio: 10000
+ *               id: "RPPRO 01-23"
+ *               nombre: "Remera básica"
+ *               precio: 1200
  *               stockProductos:
  *                 - stock: 50
- *                   color: { nombre: "Rojo" }
- *                   talle: { nombre: "M" }
+ *                   color:
+ *                     nombre: "Rojo"
+ *                   talle:
+ *                     nombre: "M"
  *                 - stock: 30
- *                   color: { nombre: "Azul" }
- *                   talle: { nombre: "L" }
- *               tipoDePrenda: { id: 3, nombre: "Remera dle" }
+ *                   color:
+ *                     nombre: "Azul"
+ *                   talle:
+ *                     nombre: "L"
+ *               tipoDePrenda:
+ *                 id: 1
+ *                 nombre: "Camisa"
  *       404:
  *         description: Producto no encontrado
  *         content:
@@ -353,23 +389,29 @@ router.get("/:id",
  *         description: Nombre del producto a buscar
  *     responses:
  *       200:
- *         description: Producto encontrado
+ *         description: Producto obtenido exitosamente
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Producto'
  *             example:
- *               id: 1
+ *               id: "RPPRO 01-23"
  *               nombre: "Remera básica"
  *               precio: 1200
  *               stockProductos:
  *                 - stock: 50
- *                   color: { nombre: "Rojo" }
- *                   talle: { nombre: "M" }
+ *                   color:
+ *                     nombre: "Rojo"
+ *                   talle:
+ *                     nombre: "M"
  *                 - stock: 30
- *                   color: { nombre: "Azul" }
- *                   talle: { nombre: "L" }
- *               tipoDePrenda: { id: 1, nombre: "Camisa" }
+ *                   color:
+ *                     nombre: "Azul"
+ *                   talle:
+ *                     nombre: "L"
+ *               tipoDePrenda:
+ *                 id: 1
+ *                 nombre: "Camisa"
  *       404:
  *         description: No se encontró el producto con ese nombre
  *         content:

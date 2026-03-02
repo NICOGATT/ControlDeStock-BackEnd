@@ -1,5 +1,5 @@
 const joi = require('joi');
-const { colorYTalleSchema } = require('./producto.schema');
+const { colorYTalleSchema, idSchema } = require('./producto.schema');
 
 const numberSchema = joi.number().integer().min(0).required().messages({
   'number.base': 'La cantidad debe ser un número',
@@ -30,25 +30,12 @@ const arrayOfColorYTalleSchema = (schema) => joi.array().items(schema).min(1).re
 
 const createStockProductoSchema = joi.object({
   coloresYTalles: arrayOfColorYTalleSchema(colorYTalleSchema),
-  productoId: numberSchema,
-});
-
-const updateColorYTalleSchema = joi.object({
-  color: joi.string().min(1).required().messages({
-    'string.base': 'El color debe ser una cadena de texto',
-    'any.required': 'El color es requerido',
-    "string.min": 'El color no puede estar vacío',
-  }),
-  talle: joi.string().min(1).required().messages({
-    'string.base': 'El color debe ser una cadena de texto',
-    'any.required': 'El color es requerido',
-    "string.min": 'El color no puede estar vacío',
-  })
+  productoId: idSchema,
 });
 
 const updateStockProductoSchema = joi.object({
   coloresYTalles: arrayOfColorYTalleSchema(colorYTalleSchema),
-  productoId: numberSchema,
+  productoId: idSchema,
 });
 
 module.exports = { createStockProductoSchema, colorYTalleSchema, updateStockProductoSchema };

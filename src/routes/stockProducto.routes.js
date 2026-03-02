@@ -102,7 +102,7 @@ const {
  *           schema:
  *             $ref: '#/components/schemas/StockProductoInput'
  *           example:
- *             productoId: 1
+ *             productoId: "RPPRO 01-23"
  *             coloresYTalles:
  *               - color: "Rojo"
  *                 talle: "M"
@@ -122,7 +122,7 @@ const {
  *             example:
  *               - stock: 50
  *                 producto:
- *                   id: 1
+ *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
  *                 color:
  *                   id: 1
@@ -132,7 +132,7 @@ const {
  *                   nombre: "M"
  *               - stock: 30
  *                 producto:
- *                   id: 1
+ *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
  *                 color:
  *                   id: 2
@@ -183,7 +183,7 @@ router.post('/',
  *           schema:
  *             $ref: '#/components/schemas/StockProductoInput'
  *           example:
- *             productoId: 1
+ *             productoId: "RPPRO 01-23"
  *             coloresYTalles:
  *               - color: "Rojo"
  *                 talle: "M"
@@ -203,7 +203,7 @@ router.post('/',
  *             example:
  *               - stock: 75
  *                 producto:
- *                   id: 1
+ *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
  *                 color:
  *                   id: 1
@@ -213,7 +213,7 @@ router.post('/',
  *                   nombre: "M"
  *               - stock: 45
  *                 producto:
- *                   id: 1
+ *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
  *                 color:
  *                   id: 2
@@ -268,9 +268,9 @@ router.put('/',
  *               - coloresYTalles
  *             properties:
  *               productoId:
- *                 type: integer
- *                 description: ID del producto
- *                 example: 1
+ *                 type: string
+ *                 description: ID del producto con formato RPPRO XX-XX
+ *                 example: "RPPRO 01-23"
  *               coloresYTalles:
  *                 type: array
  *                 items:
@@ -283,7 +283,7 @@ router.put('/',
  *                       type: string
  *                       example: "M"
  *           example:
- *             productoId: 1
+ *             productoId: "RPPRO 01-23"
  *             coloresYTalles:
  *               - color: "Rojo"
  *                 talle: "M"
@@ -331,7 +331,7 @@ router.delete('/',
  *             example:
  *               - stock: 50
  *                 producto:
- *                   id: 1
+ *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
  *                 color:
  *                   id: 1
@@ -341,7 +341,7 @@ router.delete('/',
  *                   nombre: "M"
  *               - stock: 30
  *                 producto:
- *                   id: 1
+ *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
  *                 color:
  *                   id: 2
@@ -365,9 +365,9 @@ router.get('/', getAllStockProductos);
  *         name: productoId
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID del producto
- *         example: 1
+ *           type: string
+ *         description: ID del producto con formato RPPRO XX-XX
+ *         example: "RPPRO 01-23"
  *     responses:
  *       200:
  *         description: Stock obtenido exitosamente
@@ -380,7 +380,7 @@ router.get('/', getAllStockProductos);
  *             example:
  *               - stock: 50
  *                 producto:
- *                   id: 1
+ *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
  *                 color:
  *                   id: 1
@@ -390,7 +390,7 @@ router.get('/', getAllStockProductos);
  *                   nombre: "M"
  *               - stock: 30
  *                 producto:
- *                   id: 1
+ *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
  *                 color:
  *                   id: 2

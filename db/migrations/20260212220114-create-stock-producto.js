@@ -4,8 +4,8 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('StockProductos', {
       productoId: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
+        type: Sequelize.STRING,
+        allowNull: false,
         references: {
           model: 'Productos',
           key: 'id'
@@ -15,7 +15,7 @@ module.exports = {
       },
       talleId: {
         type: Sequelize.INTEGER,
-        primaryKey: true,
+        allowNull: false,
         references: {
           model: 'Talles',
           key: 'id'
@@ -25,7 +25,7 @@ module.exports = {
       },
       colorId: {
         type: Sequelize.INTEGER,
-        primaryKey: true,
+        allowNull: false,
         references: {
           model: 'Colores',
           key: 'id'

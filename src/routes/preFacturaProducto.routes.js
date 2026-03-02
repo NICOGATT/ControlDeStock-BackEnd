@@ -96,8 +96,8 @@ const {
  *                   type: object
  *                   properties:
  *                     productoId:
- *                       type: integer
- *                       description: ID del producto (mínimo 1)
+ *                       type: string
+ *                       description: ID del producto con formato RPPRO XX-XX
  *                       minimum: 1
  *                     talleId:
  *                       type: integer
@@ -125,11 +125,11 @@ const {
  *               - preFacturaId
  *             example:
  *               productos:
- *                 - productoId: 1
+ *                 - productoId: "RPPRO 01-23"
  *                   talleId: 1
  *                   colorId: 1
  *                   cantidad: 1
- *                 - productoId: 2
+ *                 - productoId: "RPPRO 01-24"
  *                   talleId: 1
  *                   colorId: 1
  *                   cantidad: 1
@@ -147,7 +147,7 @@ const {
  *               productos:
  *                 - cantidad: 1
  *                   producto:
- *                     id: 1
+ *                     id: "RPPRO 01-23"
  *                     nombre: "Remera básica"
  *                   color:
  *                     id: 1
@@ -157,7 +157,7 @@ const {
  *                     nombre: "M"
  *                 - cantidad: 1
  *                   producto:
- *                     id: 1
+ *                     id: "RPPRO 01-23"
  *                     nombre: "Remera básica"
  *                   color:
  *                     id: 2
@@ -203,9 +203,8 @@ router.post(
  *                   type: object
  *                   properties:
  *                     productoId:
- *                       type: integer
- *                       description: ID del producto (mínimo 1)
- *                       minimum: 1
+ *                       type: string
+ *                       description: ID del producto con formato RPPRO XX-XX
  *                     talleId:
  *                       type: integer
  *                       description: ID del talle (mínimo 1)
@@ -232,11 +231,11 @@ router.post(
  *               - preFacturaId
  *             example:
  *               productos:
- *                 - productoId: 1
+ *                 - productoId: "RPPRO 01-23"
  *                   talleId: 1
  *                   colorId: 1
  *                   cantidad: 10
- *                 - productoId: 2
+ *                 - productoId: "RPPRO 01-24"
  *                   talleId: 1
  *                   colorId: 1
  *                   cantidad: 5
@@ -254,7 +253,7 @@ router.post(
  *               productos:
  *                 - cantidad: 10
  *                   producto:
- *                     id: 1
+ *                     id: "RPPRO 01-23"
  *                     nombre: "Remera básica"
  *                   color:
  *                     id: 3
@@ -264,7 +263,7 @@ router.post(
  *                     nombre: "M"
  *                 - cantidad: 5
  *                   producto:
- *                     id: 2
+ *                     id: "RPPRO 01-24"
  *                     nombre: "Remera"
  *                   color:
  *                     id: 1
@@ -317,9 +316,8 @@ router.put(
  *                   type: object
  *                   properties:
  *                     productoId:
- *                       type: integer
- *                       description: ID del producto (mínimo 1)
- *                       minimum: 1
+ *                       type: string
+ *                       description: ID del producto con formato RPPRO XX-XX
  *                     talleId:
  *                       type: integer
  *                       description: ID del talle (mínimo 1)
@@ -341,10 +339,10 @@ router.put(
  *               - preFacturaId
  *             example:
  *               productos:
- *                 - productoId: 1
+ *                 - productoId: "RPPRO 01-23"
  *                   talleId: 1
  *                   colorId: 1
- *                 - productoId: 1
+ *                 - productoId: "RPPRO 01-22"
  *                   talleId: 2
  *                   colorId: 2
  *               preFacturaId: 1
@@ -388,27 +386,55 @@ router.delete(
  *         content:
  *           application/json:
  *             example:
- *               - id: 2
- *                 fecha: "2026-02-18T19:07:11.000Z"
+ *               - id: 1
+ *                 fecha: "2026-03-02T18:50:57.000Z"
  *                 cliente:
  *                   id: 1
  *                   nombre: "Juan Perez"
  *                 productos:
  *                   - cantidad: 5
  *                     producto:
- *                       id: 1
+ *                       id: "RPPRO 01-23"
  *                       nombre: "Remera básica"
  *                       precio: 1200
  *                     color:
- *                       id: 2
- *                       nombre: "Azul"
+ *                       id: 1
+ *                       nombre: "Rojo"
  *                     talle:
  *                       id: 1
  *                       nombre: "M"
  *                   - cantidad: 10
  *                     producto:
+ *                       id: "RPPRO 01-22"
+ *                       nombre: "Remera básia"
+ *                       precio: 1200
+ *                     color:
  *                       id: 1
+ *                       nombre: "Rojo"
+ *                     talle:
+ *                       id: 1
+ *                       nombre: "M"
+ *               - id: 2
+ *                 fecha: "2026-03-02T18:54:36.000Z"
+ *                 cliente:
+ *                   id: 1
+ *                   nombre: "Juan Perez"
+ *                 productos:
+ *                   - cantidad: 1
+ *                     producto:
+ *                       id: "RPPRO 01-23"
  *                       nombre: "Remera básica"
+ *                       precio: 1200
+ *                     color:
+ *                       id: 1
+ *                       nombre: "Rojo"
+ *                     talle:
+ *                       id: 1
+ *                       nombre: "M"
+ *                   - cantidad: 1
+ *                     producto:
+ *                       id: "RPPRO 01-22"
+ *                       nombre: "Remera básia"
  *                       precio: 1200
  *                     color:
  *                       id: 1
@@ -439,16 +465,16 @@ router.get("/", getAllPreFacturasWithProducts);
  *         content:
  *           application/json:
  *             example:
- *               id: 2
- *               fecha: "2026-02-18T19:07:11.000Z"
+ *               id: 1
+ *               fecha: "2026-03-02T18:50:57.000Z"
  *               cliente:
  *                 id: 1
  *                 nombre: "Juan Perez"
  *               productos:
  *                 - cantidad: 10
  *                   producto:
- *                     id: 1
- *                     nombre: "Remera básica"
+ *                     id: "RPPRO 01-22"
+ *                     nombre: "Remera básia"
  *                     precio: 1200
  *                   color:
  *                     id: 1
@@ -458,12 +484,12 @@ router.get("/", getAllPreFacturasWithProducts);
  *                     nombre: "M"
  *                 - cantidad: 5
  *                   producto:
- *                     id: 1
+ *                     id: "RPPRO 01-23"
  *                     nombre: "Remera básica"
  *                     precio: 1200
  *                   color:
- *                     id: 2
- *                     nombre: "Azul"
+ *                     id: 1
+ *                     nombre: "Rojo"
  *                   talle:
  *                     id: 1
  *                     nombre: "M"

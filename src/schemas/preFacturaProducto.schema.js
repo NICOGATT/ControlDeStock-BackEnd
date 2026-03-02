@@ -1,4 +1,5 @@
 const joi = require("joi");
+const { idSchema } = require('./producto.schema');
 
 const numberSchema = joi.number().integer().min(1).required().messages({
     "number.base": "El campo cantidad debe ser un número entero.",
@@ -7,14 +8,14 @@ const numberSchema = joi.number().integer().min(1).required().messages({
   })
 
 const productoSchema = joi.object({
-  productoId: numberSchema,
+  productoId: idSchema,
   talleId: numberSchema,
   colorId: numberSchema,
   cantidad: numberSchema
 });
 
 const productoDeleteSchema = joi.object({
-  productoId: numberSchema,
+  productoId: idSchema,
   talleId: numberSchema,
   colorId: numberSchema
 });

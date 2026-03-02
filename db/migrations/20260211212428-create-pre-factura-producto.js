@@ -5,7 +5,7 @@ module.exports = {
     await queryInterface.createTable('PreFacturaProductos', {
       preFacturaId: {
         type: Sequelize.INTEGER,
-        primaryKey: true,
+        allowNull: false,
         references: {
           model: 'PreFacturas',
           key: 'id'
@@ -14,8 +14,8 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       productoId: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
+        type: Sequelize.STRING,
+        allowNull: false,
         references: {
           model: 'Productos',
           key: 'id'
@@ -25,7 +25,7 @@ module.exports = {
       },
       talleId: {
         type: Sequelize.INTEGER,
-        primaryKey: true,
+        allowNull: false,
         references: {
           model: 'Talles',
           key: 'id'
@@ -35,7 +35,7 @@ module.exports = {
       },
       colorId: {
         type: Sequelize.INTEGER,
-        primaryKey: true,
+        allowNull: false,
         references: {
           model: 'Colores',
           key: 'id'
@@ -47,6 +47,12 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       }
+    });
+    
+    await queryInterface.addConstraint('PreFacturaProductos', {
+      fields: ['preFacturaId', 'productoId', 'talleId', 'colorId'],
+      type: 'primary key',
+      name: 'PK_PreFacturaProductos'
     });
   },
   async down(queryInterface, Sequelize) {

@@ -25,6 +25,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Producto.init({
+    id:{
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true,
+      unique: true
+    },
     nombre: {
       type: DataTypes.STRING,
       allowNull: false,

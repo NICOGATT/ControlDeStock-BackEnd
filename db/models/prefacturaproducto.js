@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
       },
       productoId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
         primaryKey: true,
         onDelete: "CASCADE",
@@ -64,6 +64,13 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "PreFacturaProducto",
+      indexes: [
+        {
+          unique: true,
+          fields: ["preFacturaId", "productoId", "talleId", "colorId"],
+          name: "PK_PreFacturaProductos",
+        },
+      ],
       timestamps: false,
     },
   );

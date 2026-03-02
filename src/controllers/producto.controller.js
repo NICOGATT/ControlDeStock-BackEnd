@@ -13,10 +13,10 @@ const crearStock = async (modeloColor, valorColor, modeloTalle, valorTalle, prod
   });
 };
 
-//EDITAR CUANDO TERMINE STOCKPRODUCTO
 const createProducto = async (req, res) => {
-  const { colorYTalle, nombre, precio } = req.body;
+  const { colorYTalle, nombre, precio, id } = req.body;
   const newProducto = await Producto.create({
+    id,
     nombre,
     precio,
   });
@@ -150,5 +150,5 @@ module.exports = {
   deleteModel,
   getAllProductos,
   getProductoById,
-  getProductoByName
+  getProductoByName,
 };

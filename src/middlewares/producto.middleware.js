@@ -18,11 +18,21 @@ const validateProductoByIdBody = async (req, res, next) => {
   next();
 }
 
+const validateProductId = async (req, res, next) => {
+  const { id } = req.body;
+  const producto = await Producto.findByPk(id);
+  if (producto) {
+    return res.status(404).json({ message: `Ya existe un producto con el ID: ${id}. ` });
+  }
+  next();
+}
+
 module.exports = {
   validateProductoSchema,
   validateProductoUpdateSchema,
   validateProductoById,
   validateProductoName,
   validateProductoByName,
-  validateProductoByIdBody
+  validateProductoByIdBody,
+  validateProductId
 };

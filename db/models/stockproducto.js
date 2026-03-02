@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
   StockProducto.init(
     {
       productoId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
         primaryKey: true,
         onDelete: "CASCADE",
@@ -58,6 +58,7 @@ module.exports = (sequelize, DataTypes) => {
         {
           unique: true,
           fields: ["productoId", "talleId", "colorId"],
+          name: "PK_StockProductos",
         },
       ],
     },
