@@ -10,8 +10,6 @@ const {
   validatePreFacturaById 
 } = require("../middlewares/preFactura.middleware");
 const {
-  validateStockProductoQuantity,
-  validateStockProductoUpdateQuantity,
   validateStockProductoExistsByIds
 } = require("../middlewares/stockProducto.middleware");
 const {
@@ -178,7 +176,6 @@ router.post(
   validatePreFacturaProductoSchema,
   validatePreFacturaProductoNonExistence,
   validateStockProductoExistsByIds,
-  validateStockProductoQuantity,
   addProductsToPreFactura
 );
 
@@ -291,7 +288,6 @@ router.put(
   validatePreFacturaProductoSchema,
   validatePreFacturaProductoExistence,
   validateStockProductoExistsByIds,
-  validateStockProductoUpdateQuantity,
   editPreFacturaProducto
 );
 

@@ -5,6 +5,7 @@ const {
   validateUpdateStockProductoSchema,
   validateStockProductoExists,
   validateStockProductoNonExists,
+  validateStockProductoQuantity,
 } = require("../middlewares/stockProducto.middleware")
 const {
   validateProductoByIdBody
@@ -12,6 +13,8 @@ const {
 const {
   createStockProducto,
   updateStockProducto,
+  addStockProductoQuantity,
+  reduceStockProductoQuantity,
   deleteStockProducto,
   getAllStockProductos,
   getStockProductoByProductoId,
@@ -249,7 +252,174 @@ router.put('/',
   updateStockProducto
 );
 
-//3. Eliminar stock de producto por id VERIFICADO SWAGGER DOCUMENTADO
+//4. añadir stock a un producto
+/**
+ * @swagger
+ * /api/stockProductos/add-stock:
+ *   put:
+ *     summary: Añadir cantidad al stock de un producto
+ *     description: Incrementa la cantidad de stock para combinaciones de color y talle de un producto
+ *     tags: [StockProductos]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/StockProductoInput'
+ *           example:
+ *             productoId: "RPPRO 01-23"
+ *             coloresYTalles:
+ *               - color: "Rojo"
+ *                 talle: "M"
+ *                 cantidad: 10
+ *               - color: "Azul"
+ *                 talle: "L"
+ *                 cantidad: 5
+ *     responses:
+ *       200:
+ *         description: Stock incrementado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/StockProducto'
+ *             example:
+ *               - stock: 60
+ *                 producto:
+ *                   id: "RPPRO 01-23"
+ *                   nombre: "Remera básica"
+ *                 color:
+ *                   id: 1
+ *                   nombre: "Rojo"
+ *                 talle:
+ *                   id: 1
+ *                   nombre: "M"
+ *               - stock: 35
+ *                 producto:
+ *                   id: "RPPRO 01-23"
+ *                   nombre: "Remera básica"
+ *                 color:
+ *                   id: 2
+ *                   nombre: "Azul"
+ *                 talle:
+ *                   id: 2
+ *                   nombre: "L"
+ *       400:
+ *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             examples:
+ *               validationError:
+ *                 summary: Error de validación
+ *                 value:
+ *                   - atributo: "coloresYTalles"
+ *                     mensaje: "coloresYTalles debe tener al menos 1 elemento"
+ *               stockNotFound:
+ *                 summary: Stock no encontrado
+ *                 value:
+ *                   message: "El stock para este producto, color y talle no existe"
+ *       404:
+ *         description: Producto no encontrado
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "No se encontró el producto con id 13"
+ */
+router.put('/add-stock',
+  validateUpdateStockProductoSchema,
+  validateProductoByIdBody,
+  validateStockProductoExists,
+  addStockProductoQuantity
+);
+
+//5. restar stock a un producto
+/**
+ * @swagger
+ * /api/stockProductos/reduce-stock:
+ *   put:
+ *     summary: Restar cantidad al stock de un producto
+ *     description: Decrementa la cantidad de stock para combinaciones de color y talle de un producto
+ *     tags: [StockProductos]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/StockProductoInput'
+ *           example:
+ *             productoId: "RPPRO 01-23"
+ *             coloresYTalles:
+ *               - color: "Rojo"
+ *                 talle: "M"
+ *                 cantidad: 10
+ *               - color: "Azul"
+ *                 talle: "L"
+ *                 cantidad: 5
+ *     responses:
+ *       200:
+ *         description: Stock decrementado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/StockProducto'
+ *             example:
+ *               - stock: 40
+ *                 producto:
+ *                   id: "RPPRO 01-23"
+ *                   nombre: "Remera básica"
+ *                 color:
+ *                   id: 1
+ *                   nombre: "Rojo"
+ *                 talle:
+ *                   id: 1
+ *                   nombre: "M"
+ *               - stock: 25
+ *                 producto:
+ *                   id: "RPPRO 01-23"
+ *                   nombre: "Remera básica"
+ *                 color:
+ *                   id: 2
+ *                   nombre: "Azul"
+ *                 talle:
+ *                   id: 2
+ *                   nombre: "L"
+ *       400:
+ *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             examples:
+ *               validationError:
+ *                 summary: Error de validación
+ *                 value:
+ *                   - atributo: "coloresYTalles"
+ *                     mensaje: "coloresYTalles debe tener al menos 1 elemento"
+ *               stockNotFound:
+ *                 summary: Stock no encontrado
+ *                 value:
+ *                   message: "El stock para este producto, color y talle no existe"
+ *               insufficientStock:
+ *                 summary: Stock insuficiente
+ *                 value:
+ *                   message: "Stock insuficiente para el producto, color y talle especificados"
+ *       404:
+ *         description: Producto no encontrado
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "No se encontró el producto con id 13"
+ */
+router.put('/reduce-stock',
+  validateUpdateStockProductoSchema,
+  validateProductoByIdBody,
+  validateStockProductoExists,
+  validateStockProductoQuantity,
+  reduceStockProductoQuantity
+);
+
+//6. Eliminar stock de producto por id VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/stockProductos:
@@ -311,7 +481,7 @@ router.delete('/',
   deleteStockProducto
 );
 
-//4. Obtener todos los stocks de productos VERIFICADO SWAGGER DOCUMENTADO
+//7. Obtener todos los stocks de productos VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/stockProductos:
@@ -352,7 +522,7 @@ router.delete('/',
  */
 router.get('/', getAllStockProductos);
 
-//5. Obtener stock de producto por id de producto VERIFICADO SWAGGER DOCUMENTADO
+//8. Obtener stock de producto por id de producto VERIFICADO SWAGGER DOCUMENTADO
 /**
  * @swagger
  * /api/stockProductos/producto/{productoId}:

@@ -75,59 +75,25 @@ const validateStockProductoNonExists = async (req, res, next) => {
 };
 
 const validateStockProductoQuantity = async (req, res, next) => {
-  const { productos } = req.body;
+  const { productoId, coloresYTalles } = req.body;
 
-  for (const producto of productos) {
-    const product = await Producto.findByPk(producto.productoId);
-    const color = await Color.findByPk(producto.colorId);
-    const talle = await Talle.findByPk(producto.talleId);
+  for (const colorYTalle of coloresYTalles) {
+    const { color, talle, cantidad } = colorYTalle;
+    const product = await Producto.findByPk(productoId);
+    const colorInstance = await Color.findOne({ where: { nombre: color } });
+    const talleInstance = await Talle.findOne({ where: { nombre: talle } });
     const stockProducto = await StockProducto.findOne({
       where: {
-        productoId: producto.productoId,
-        colorId: producto.colorId,
-        talleId: producto.talleId,
+        productoId,
+        colorId: colorInstance.id,
+        talleId: talleInstance.id,
       },
     });
 
-    if (stockProducto && stockProducto.stock < producto.cantidad) {
+    if (stockProducto && stockProducto.stock < cantidad) {
       return res.status(400).json({
-        message: `No hay stock suficiente: de ${product.nombre}, de color ${color.nombre} y talle ${talle.nombre}, el stock actual es ${stockProducto.stock} y se requiere ${producto.cantidad}`,
+        message: `No hay stock suficiente: de ${product.nombre}, de color ${color.nombre} y talle ${talle.nombre}, el stock actual es ${stockProducto.stock} y se requiere ${cantidad}`,
       });
-    }
-  }
-  next();
-};
-
-const validateStockProductoUpdateQuantity = async (req, res, next) => {
-  const { productos, preFacturaId } = req.body;
-
-  for (const producto of productos) {
-    const product = await Producto.findByPk(producto.productoId);
-    const color = await Color.findByPk(producto.colorId);
-    const talle = await Talle.findByPk(producto.talleId);
-    const stockProducto = await StockProducto.findOne({
-      where: {
-        productoId: producto.productoId,
-        colorId: producto.colorId,
-        talleId: producto.talleId,
-      },
-    });
-    const prefactura = await PreFacturaProducto.findOne({
-      where: {
-        preFacturaId,
-        productoId: producto.productoId,
-        colorId: producto.colorId,
-        talleId: producto.talleId,
-      },
-    })
-
-    const diferencia = producto.cantidad - prefactura.cantidad;
-    if (diferencia > 0) {
-      if (stockProducto && stockProducto.stock < diferencia) {
-        return res.status(400).json({
-          message: `No hay stock suficiente: de ${product.nombre}, de color ${color.nombre} y talle ${talle.nombre}, el stock actual es ${stockProducto.stock} y se requiere ${diferencia}`,
-        });
-      }
     }
   }
   next();
@@ -169,6 +135,5 @@ module.exports = {
   validateStockProductoExists,
   validateStockProductoNonExists,
   validateStockProductoQuantity,
-  validateStockProductoUpdateQuantity,
   validateStockProductoExistsByIds
 };

@@ -61,7 +61,61 @@ const updateStockProducto = async (req, res) => {
   return res.status(200).json(stockProductos);
 }
 
-//3. Eliminar stock de producto por id
+//4. añadir stock a un producto
+const addStockProductoQuantity = async (req, res) => {
+  const { productoId, coloresYTalles } = req.body;
+
+  const promises = coloresYTalles.map(async (item) => {
+    const { color, talle, cantidad } = item;
+    const colorInstance = await Color.findOrCreate({ where: { nombre: color } });
+    const talleInstance = await Talle.findOrCreate({ where: { nombre: talle } });
+    await StockProducto.increment(
+      { stock: cantidad },
+      {
+        where: {
+          productoId,
+          colorId: colorInstance[0].id,
+          talleId: talleInstance[0].id,
+        },
+      }
+    );
+  });
+
+  await Promise.all(promises);
+
+  const stockProductos = await resBody(productoId);
+
+  return res.status(200).json(stockProductos);
+}
+
+//5. restar stock a un producto
+const reduceStockProductoQuantity = async (req, res) => {
+  const { productoId, coloresYTalles } = req.body;
+
+  const promises = coloresYTalles.map(async (item) => {
+    const { color, talle, cantidad } = item;
+    const colorInstance = await Color.findOrCreate({ where: { nombre: color } });
+    const talleInstance = await Talle.findOrCreate({ where: { nombre: talle } });
+    await StockProducto.decrement(
+      { stock: cantidad },
+      {
+        where: {
+          productoId,
+          colorId: colorInstance[0].id,
+          talleId: talleInstance[0].id,
+        },
+      }
+    );
+  });
+
+  await Promise.all(promises);
+
+  const stockProductos = await resBody(productoId);
+
+  return res.status(200).json(stockProductos);
+}
+
+//6. Eliminar stock de producto por id
 const deleteStockProducto = async (req, res) => {
   const { productoId, coloresYTalles } = req.body;
 
@@ -83,7 +137,7 @@ const deleteStockProducto = async (req, res) => {
   return res.status(204).send();
 }
 
-//4. Obtener todos los stocks de productos
+//7. Obtener todos los stocks de productos
 const getAllStockProductos = async (_, res) => {
   const stockProductos = await StockProducto.findAll({
     attributes: [ 'stock'],
@@ -96,7 +150,7 @@ const getAllStockProductos = async (_, res) => {
   return res.status(200).json(stockProductos);
 }
 
-//5. Obtener stock de producto por id
+//8. Obtener stock de producto por id
 const getStockProductoByProductoId = async (req, res) => {
   const { productoId } = req.params;
   const stockProductos = await resBody(productoId);
@@ -107,6 +161,8 @@ const getStockProductoByProductoId = async (req, res) => {
 module.exports = {
   createStockProducto,
   updateStockProducto,
+  addStockProductoQuantity,
+  reduceStockProductoQuantity,
   deleteStockProducto,
   getAllStockProductos,
   getStockProductoByProductoId,
