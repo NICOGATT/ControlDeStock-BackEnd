@@ -52,7 +52,7 @@ const createProducto = async (req, res) => {
 //2. Actualizar un producto por su ID
 const updateProducto = async (req, res) => {
   const { id } = req.params;
-  const { nombre, cantidad, precio, tipoDePrenda } = req.body;
+  const { nombre, precio, tipoDePrenda } = req.body;
   const producto = await Producto.findByPk(id);
   
   if (tipoDePrenda){
@@ -61,8 +61,7 @@ const updateProducto = async (req, res) => {
   }
   
   await Producto.update({ 
-    nombre, 
-    cantidad, 
+    nombre,  
     precio,
   }, 
     { where: { id } }
