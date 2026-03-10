@@ -29,22 +29,14 @@ const {
  *     StockProducto:
  *       type: object
  *       properties:
- *         productoId:
- *           type: integer
- *           description: ID del producto
- *           example: 1
- *         colorId:
- *           type: integer
- *           description: ID del color
- *           example: 2
- *         talleId:
- *           type: integer
- *           description: ID del talle
- *           example: 3
  *         stock:
  *           type: integer
  *           description: Cantidad en stock
  *           example: 50
+ *         precio:
+ *           type: integer
+ *           description: Precio para esta combinación de color y talle
+ *           example: 1200
  *         producto:
  *           type: object
  *           description: Información del producto asociado
@@ -55,6 +47,30 @@ const {
  *           type: object
  *           description: Información del talle asociado
  *     ColorYTalle:
+ *       type: object
+ *       required:
+ *         - color
+ *         - talle
+ *         - cantidad
+ *         - precio
+ *       properties:
+ *         color:
+ *           type: string
+ *           description: Nombre del color
+ *           example: "Rojo"
+ *         talle:
+ *           type: string
+ *           description: Nombre del talle
+ *           example: "M"
+ *         cantidad:
+ *           type: integer
+ *           description: Cantidad de stock
+ *           example: 50
+ *         precio:
+ *           type: integer
+ *           description: Precio para esta combinación de color y talle
+ *           example: 1200
+ *     ColorYTalleCantidad:
  *       type: object
  *       required:
  *         - color
@@ -71,8 +87,8 @@ const {
  *           example: "M"
  *         cantidad:
  *           type: integer
- *           description: Cantidad de stock
- *           example: 50
+ *           description: Cantidad de stock a sumar o restar
+ *           example: 10
  *     StockProductoInput:
  *       type: object
  *       required:
@@ -80,14 +96,29 @@ const {
  *         - coloresYTalles
  *       properties:
  *         productoId:
- *           type: integer
- *           description: ID del producto
- *           example: 1
+ *           type: string
+ *           description: ID del producto con formato RPPRO XX-XX
+ *           example: "RPPRO 01-23"
  *         coloresYTalles:
  *           type: array
  *           description: Lista de combinaciones de colores y talles con cantidades
  *           items:
  *             $ref: '#/components/schemas/ColorYTalle'
+ *     StockProductoCantidadInput:
+ *       type: object
+ *       required:
+ *         - productoId
+ *         - coloresYTalles
+ *       properties:
+ *         productoId:
+ *           type: string
+ *           description: ID del producto con formato RPPRO XX-XX
+ *           example: "RPPRO 01-23"
+ *         coloresYTalles:
+ *           type: array
+ *           description: Lista de combinaciones de colores y talles con cantidades
+ *           items:
+ *             $ref: '#/components/schemas/ColorYTalleCantidad'
  */
 
 //1. Crear stock de producto VERIFICADO SWAGGER DOCUMENTADO
@@ -110,9 +141,11 @@ const {
  *               - color: "Rojo"
  *                 talle: "M"
  *                 cantidad: 50
+ *                 precio: 1200
  *               - color: "Azul"
  *                 talle: "L"
  *                 cantidad: 30
+ *                 precio: 1100
  *     responses:
  *       201:
  *         description: Stock creado exitosamente
@@ -124,6 +157,7 @@ const {
  *                 $ref: '#/components/schemas/StockProducto'
  *             example:
  *               - stock: 50
+ *                 precio: 1200
  *                 producto:
  *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
@@ -134,6 +168,7 @@ const {
  *                   id: 1
  *                   nombre: "M"
  *               - stock: 30
+ *                 precio: 1100
  *                 producto:
  *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
@@ -191,9 +226,11 @@ router.post('/',
  *               - color: "Rojo"
  *                 talle: "M"
  *                 cantidad: 75
+ *                 precio: 1200
  *               - color: "Azul"
  *                 talle: "L"
  *                 cantidad: 45
+ *                 precio: 1100
  *     responses:
  *       200:
  *         description: Stock actualizado exitosamente
@@ -205,6 +242,7 @@ router.post('/',
  *                 $ref: '#/components/schemas/StockProducto'
  *             example:
  *               - stock: 75
+ *                 precio: 1200
  *                 producto:
  *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
@@ -215,6 +253,7 @@ router.post('/',
  *                   id: 1
  *                   nombre: "M"
  *               - stock: 45
+ *                 precio: 1100
  *                 producto:
  *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
@@ -228,22 +267,22 @@ router.post('/',
  *         description: Error de validación
  *         content:
  *           application/json:
+ *             example:
+ *               - atributo: "coloresYTalles"
+ *                 mensaje: "coloresYTalles debe tener al menos 1 elemento"
+ *       404:
+ *         description: Producto o stock no encontrado
+ *         content:
+ *           application/json:
  *             examples:
- *               validationError:
- *                 summary: Error de validación
+ *               productoNotFound:
+ *                 summary: Producto no encontrado
  *                 value:
- *                   - atributo: "coloresYTalles"
- *                     mensaje: "coloresYTalles debe tener al menos 1 elemento"
+ *                   message: "No se encontró el producto con id RPPRO 01-23"
  *               stockNotFound:
  *                 summary: Stock no encontrado
  *                 value:
- *                   message: "El stock para este producto, color y talle no existe"
- *       404:
- *         description: Producto no encontrado
- *         content:
- *           application/json:
- *             example:
- *               message: "No se encontró el producto con id 13"
+ *                   message: "No se encontró stock asociado al producto: Remera básica, de color Rojo y talle M"
  */
 router.put('/',
   validateUpdateStockProductoSchema,
@@ -265,7 +304,7 @@ router.put('/',
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/StockProductoInput'
+ *             $ref: '#/components/schemas/StockProductoCantidadInput'
  *           example:
  *             productoId: "RPPRO 01-23"
  *             coloresYTalles:
@@ -286,6 +325,7 @@ router.put('/',
  *                 $ref: '#/components/schemas/StockProducto'
  *             example:
  *               - stock: 60
+ *                 precio: 1200
  *                 producto:
  *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
@@ -296,6 +336,7 @@ router.put('/',
  *                   id: 1
  *                   nombre: "M"
  *               - stock: 35
+ *                 precio: 1100
  *                 producto:
  *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
@@ -309,22 +350,22 @@ router.put('/',
  *         description: Error de validación
  *         content:
  *           application/json:
+ *             example:
+ *               - atributo: "coloresYTalles"
+ *                 mensaje: "coloresYTalles debe tener al menos 1 elemento"
+ *       404:
+ *         description: Producto o stock no encontrado
+ *         content:
+ *           application/json:
  *             examples:
- *               validationError:
- *                 summary: Error de validación
+ *               productoNotFound:
+ *                 summary: Producto no encontrado
  *                 value:
- *                   - atributo: "coloresYTalles"
- *                     mensaje: "coloresYTalles debe tener al menos 1 elemento"
+ *                   message: "No se encontró el producto con id RPPRO 01-23"
  *               stockNotFound:
  *                 summary: Stock no encontrado
  *                 value:
- *                   message: "El stock para este producto, color y talle no existe"
- *       404:
- *         description: Producto no encontrado
- *         content:
- *           application/json:
- *             example:
- *               message: "No se encontró el producto con id 13"
+ *                   message: "No se encontró stock asociado al producto: Remera básica, de color Rojo y talle M"
  */
 router.put('/add-stock',
   validateUpdateStockProductoSchema,
@@ -346,7 +387,7 @@ router.put('/add-stock',
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/StockProductoInput'
+ *             $ref: '#/components/schemas/StockProductoCantidadInput'
  *           example:
  *             productoId: "RPPRO 01-23"
  *             coloresYTalles:
@@ -367,6 +408,7 @@ router.put('/add-stock',
  *                 $ref: '#/components/schemas/StockProducto'
  *             example:
  *               - stock: 40
+ *                 precio: 1200
  *                 producto:
  *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
@@ -377,6 +419,7 @@ router.put('/add-stock',
  *                   id: 1
  *                   nombre: "M"
  *               - stock: 25
+ *                 precio: 1100
  *                 producto:
  *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
@@ -387,7 +430,7 @@ router.put('/add-stock',
  *                   id: 2
  *                   nombre: "L"
  *       400:
- *         description: Error de validación
+ *         description: Error de validación o stock insuficiente
  *         content:
  *           application/json:
  *             examples:
@@ -396,20 +439,23 @@ router.put('/add-stock',
  *                 value:
  *                   - atributo: "coloresYTalles"
  *                     mensaje: "coloresYTalles debe tener al menos 1 elemento"
- *               stockNotFound:
- *                 summary: Stock no encontrado
- *                 value:
- *                   message: "El stock para este producto, color y talle no existe"
  *               insufficientStock:
  *                 summary: Stock insuficiente
  *                 value:
- *                   message: "Stock insuficiente para el producto, color y talle especificados"
+ *                   message: "No hay stock suficiente: de Remera básica, de color Rojo y talle M, el stock actual es 5 y se requiere 10"
  *       404:
- *         description: Producto no encontrado
+ *         description: Producto o stock no encontrado
  *         content:
  *           application/json:
- *             example:
- *               message: "No se encontró el producto con id 13"
+ *             examples:
+ *               productoNotFound:
+ *                 summary: Producto no encontrado
+ *                 value:
+ *                   message: "No se encontró el producto con id RPPRO 01-23"
+ *               stockNotFound:
+ *                 summary: Stock no encontrado
+ *                 value:
+ *                   message: "No se encontró stock asociado al producto: Remera básica, de color Rojo y talle M"
  */
 router.put('/reduce-stock',
   validateUpdateStockProductoSchema,
@@ -462,18 +508,19 @@ router.put('/reduce-stock',
  *     responses:
  *       204:
  *         description: Stock eliminado exitosamente
- *       400:
- *         description: Error de validación
- *         content:
- *           application/json:
- *             example:
- *               message: "Stock no encontrado"
  *       404:
- *         description: Producto no encontrado
+ *         description: Producto o stock no encontrado
  *         content:
  *           application/json:
- *             example:
- *               message: "No se encontró el producto con id 13"
+ *             examples:
+ *               productoNotFound:
+ *                 summary: Producto no encontrado
+ *                 value:
+ *                   message: "No se encontró el producto con id RPPRO 01-23"
+ *               stockNotFound:
+ *                 summary: Stock no encontrado
+ *                 value:
+ *                   message: "No se encontró stock asociado al producto: Remera básica, de color Rojo y talle M"
  */
 router.delete('/',
   validateProductoByIdBody,
@@ -500,6 +547,7 @@ router.delete('/',
  *                 $ref: '#/components/schemas/StockProducto'
  *             example:
  *               - stock: 50
+ *                 precio: 1200
  *                 producto:
  *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
@@ -510,6 +558,7 @@ router.delete('/',
  *                   id: 1
  *                   nombre: "M"
  *               - stock: 30
+ *                 precio: 1100
  *                 producto:
  *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
@@ -549,6 +598,7 @@ router.get('/', getAllStockProductos);
  *                 $ref: '#/components/schemas/StockProducto'
  *             example:
  *               - stock: 50
+ *                 precio: 1200
  *                 producto:
  *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
@@ -559,6 +609,7 @@ router.get('/', getAllStockProductos);
  *                   id: 1
  *                   nombre: "M"
  *               - stock: 30
+ *                 precio: 1100
  *                 producto:
  *                   id: "RPPRO 01-23"
  *                   nombre: "Remera básica"
@@ -573,7 +624,7 @@ router.get('/', getAllStockProductos);
  *         content:
  *           application/json:
  *             example:
- *               message: "No se encontró el producto con id 13"
+ *               message: "No se encontró el producto con id RPPRO 01-23"
  */
 router.get('/producto/:productoId',
   getStockProductoByProductoId

@@ -2,7 +2,7 @@ const { Producto, Color, Talle, TipoDePrenda, StockProducto } = require("../../d
 const genericControllers = require("./generic.controller");
 
 //1. Crear un nuevo producto
-const crearStock = async (modeloColor, valorColor, modeloTalle, valorTalle, productoId, stock) => {
+const crearStock = async (modeloColor, valorColor, modeloTalle, valorTalle, productoId, stock, precio) => {
   const color = await modeloColor.findOrCreate({ where: { nombre: valorColor } });
   const talle = await modeloTalle.findOrCreate({ where: { nombre: valorTalle } });
   await StockProducto.create({
@@ -10,19 +10,19 @@ const crearStock = async (modeloColor, valorColor, modeloTalle, valorTalle, prod
     colorId: color[0].id, 
     talleId: talle[0].id, 
     stock: stock,
+    precio: precio,
   });
 };
 
 const createProducto = async (req, res) => {
-  const { colorYTalle, nombre, precio, id } = req.body;
+  const { colorYTalle, nombre, id } = req.body;
   const newProducto = await Producto.create({
     id,
     nombre,
-    precio,
   });
 
   const promesas = colorYTalle.map(async (item) => {
-    await crearStock(Color, item.color, Talle, item.talle, newProducto.id, item.cantidad);
+    await crearStock(Color, item.color, Talle, item.talle, newProducto.id, item.cantidad, item.precio);
   });
 
   await Promise.all(promesas);
@@ -36,7 +36,7 @@ const createProducto = async (req, res) => {
         {
           model: StockProducto,
           as: "stockProductos",
-          attributes: ["stock"],
+          attributes: ["stock", "precio"],
           include: [
             { model: Color, as: "color", attributes: ["nombre"] },
             { model: Talle, as: "talle", attributes: ["nombre"] },
@@ -52,7 +52,7 @@ const createProducto = async (req, res) => {
 //2. Actualizar un producto por su ID
 const updateProducto = async (req, res) => {
   const { id } = req.params;
-  const { nombre, precio, tipoDePrenda } = req.body;
+  const { nombre, tipoDePrenda } = req.body;
   const producto = await Producto.findByPk(id);
   
   if (tipoDePrenda){
@@ -61,14 +61,13 @@ const updateProducto = async (req, res) => {
   }
   
   await Producto.update({ 
-    nombre,  
-    precio,
+    nombre
   }, 
     { where: { id } }
   );
 
   const responseProducto = await Producto.findByPk(id, {
-    attributes: ["id", "nombre", "precio"],
+    attributes: ["id", "nombre"],
     include: [
       { model: TipoDePrenda, as: "tipoDePrenda" },
     ],
@@ -83,12 +82,12 @@ const deleteModel = genericControllers.deleteModel(Producto);
 //4. Obtener todos los productos
 const getAllProductos = async (_, res) => {
   const productos = await Producto.findAll({
-    attributes: ["id", "nombre", "precio"],
+    attributes: ["id", "nombre"],
     include: [
       {
         model: StockProducto,
         as: "stockProductos",
-        attributes: ["stock"],
+        attributes: ["stock", "precio"],
         include: [
           { model: Color, as: "color", attributes: ["nombre"] },
           { model: Talle, as: "talle", attributes: ["nombre"] },
@@ -104,12 +103,12 @@ const getAllProductos = async (_, res) => {
 const getProductoById = async (req, res) => {
   const { id } = req.params;
   const producto = await Producto.findByPk(id, {
-    attributes: ["id", "nombre", "precio"],
+    attributes: ["id", "nombre"],
     include: [
       {
         model: StockProducto,
         as: "stockProductos",
-        attributes: ["stock"],
+        attributes: ["stock", "precio"],
         include: [
           { model: Color, as: "color", attributes: ["nombre"] },
           { model: Talle, as: "talle", attributes: ["nombre"] },
@@ -126,12 +125,12 @@ const getProductoByName = async (req, res) => {
   const { nombre } = req.params;
   const producto = await Producto.findOne({
     where: { nombre },
-    attributes: ["id", "nombre", "precio"],
+    attributes: ["id", "nombre"],
     include: [
       {
         model: StockProducto,
         as: "stockProductos",
-        attributes: ["stock"],
+        attributes: ["stock", "precio"],
         include: [
           { model: Color, as: "color", attributes: ["nombre"] },
           { model: Talle, as: "talle", attributes: ["nombre"] },

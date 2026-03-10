@@ -2,7 +2,7 @@ const { StockProducto, Producto, Talle, Color } = require('../../db/models');
 
 const resBody = async (productoId) => await StockProducto.findAll({
   where: { productoId },
-  attributes: [ 'stock'],
+  attributes: [ 'stock', 'precio'],
   include: [
     { model: Producto, as: 'producto', attributes: ['id', 'nombre'] },
     { model: Color, as: 'color', attributes: ['id', 'nombre'] },
@@ -15,7 +15,7 @@ const createStockProducto = async (req, res) => {
   const { productoId, coloresYTalles } = req.body;
 
   const promises = coloresYTalles.map(async (item) => {
-    const { color, talle, cantidad } = item;
+    const { color, talle, cantidad, precio } = item;
     const colorInstance = await Color.findOrCreate({ where: { nombre: color } });
     const talleInstance = await Talle.findOrCreate({ where: { nombre: talle } });
     await StockProducto.create({
@@ -23,6 +23,7 @@ const createStockProducto = async (req, res) => {
       colorId: colorInstance[0].id,
       talleId: talleInstance[0].id,
       stock: cantidad,
+      precio: precio
     });
   });
 
@@ -39,11 +40,11 @@ const updateStockProducto = async (req, res) => {
   const { productoId, coloresYTalles } = req.body;
 
   const promises = coloresYTalles.map(async (item) => {
-    const { color, talle, cantidad } = item;
+    const { color, talle, cantidad, precio } = item;
     const colorInstance = await Color.findOrCreate({ where: { nombre: color } });
     const talleInstance = await Talle.findOrCreate({ where: { nombre: talle } });
     await StockProducto.update(
-      { stock: cantidad },
+      { stock: cantidad, precio: precio },
       {
         where: {
           productoId,
@@ -140,7 +141,7 @@ const deleteStockProducto = async (req, res) => {
 //7. Obtener todos los stocks de productos
 const getAllStockProductos = async (_, res) => {
   const stockProductos = await StockProducto.findAll({
-    attributes: [ 'stock'],
+    attributes: [ 'stock', 'precio'],
     include: [
       { model: Producto, as: 'producto', attributes: ['id', 'nombre'] },
       { model: Color, as: 'color', attributes: ['id', 'nombre'] },

@@ -13,13 +13,23 @@ const idSchema = stringSchema.pattern(/^RPPRO \d{2}-\d{2}$/).required().label("i
     }
   )
 const colorYTalleSchema = joi.object({
-  color: stringSchema.label("color"),
-  talle: stringSchema.label("talle"),
+  color: stringSchema.required().label("color").messages({
+    "any.required": "El campo color es obligatorio",
+  }),
+  talle: stringSchema.required().label("talle").messages({
+    "any.required": "El campo talle es obligatorio",
+  }),
   cantidad: joi.number().integer().min(0).required().messages({
     "number.base": "La cantidad debe ser un número",
     "number.integer": "La cantidad debe ser un número entero",
     "number.min": "La cantidad debe ser al menos 0",
     "any.required": "La cantidad es obligatoria",
+  }),
+  precio: joi.number().integer().min(1).required().messages({
+    "number.base": "El precio debe ser un número",
+    "number.integer": "El precio debe ser un número entero",
+    "number.min": "El precio debe ser al menos 1",
+    "any.required": "El campo precio es obligatorio",
   }),
 });
 
@@ -50,12 +60,6 @@ const productoSchema = joi.object({
   nombre: stringSchema.required().label("nombre").messages({
     "any.required": "El campo nombre es obligatorio",
   }),
-  precio: joi.number().integer().min(1).required().messages({
-    "number.base": "El precio debe ser un número",
-    "number.integer": "El precio debe ser un número entero",
-    "number.min": "El precio debe ser al menos 1",
-    "any.required": "El campo precio es obligatorio",
-  }),
   tipoDePrenda: stringSchema.required().label("nombre").messages({
     "any.required": "El campo nombre es obligatorio",
   })
@@ -63,11 +67,6 @@ const productoSchema = joi.object({
 
 const productoUpdateSchema = joi.object({
   nombre: stringSchema.label("nombre"),
-  precio: joi.number().integer().min(1).label("precio").messages({
-    "number.base": "El precio debe ser un número",
-    "number.integer": "El precio debe ser un número entero",
-    "number.min": "El precio debe ser al menos 1",
-  }),
   tipoDePrenda: stringSchema.label("tipoDePrenda")
 })
 

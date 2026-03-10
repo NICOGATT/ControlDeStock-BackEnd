@@ -26,7 +26,6 @@ const {
  *       type: object
  *       required:
  *         - nombre
- *         - precio
  *       properties:
  *         id:
  *           type: string
@@ -36,10 +35,6 @@ const {
  *           type: string
  *           description: Nombre del producto
  *           example: "Remera básica"
- *         precio:
- *           type: integer
- *           description: Precio del producto
- *           example: 1200
  *         tipoDePrendaId:
  *           type: string
  *           nullable: true
@@ -63,7 +58,6 @@ const {
  *             required:
  *               - id
  *               - nombre
- *               - precio
  *               - colorYTalle
  *               - tipoDePrenda
  *             properties:
@@ -75,10 +69,6 @@ const {
  *                 type: string
  *                 description: Nombre del producto
  *                 example: "Remera básica"
- *               precio:
- *                 type: integer
- *                 description: Precio del producto
- *                 example: 1200
  *               colorYTalle:
  *                 type: array
  *                 description: Lista de combinaciones de colores y talles
@@ -88,6 +78,7 @@ const {
  *                     - color
  *                     - talle
  *                     - cantidad
+ *                     - precio
  *                   properties:
  *                     color:
  *                       type: string
@@ -101,6 +92,10 @@ const {
  *                       type: integer
  *                       description: Cantidad disponible para esta combinación
  *                       example: 50
+ *                     precio:
+ *                       type: integer
+ *                       description: Precio para esta combinación de color y talle
+ *                       example: 1200
  *               tipoDePrenda:
  *                 type: string
  *                 description: Tipo de prenda del producto
@@ -108,14 +103,15 @@ const {
  *           example:
  *             id: "RPPRO 01-23"
  *             nombre: "Remera básica"
- *             precio: 1200
  *             colorYTalle:
  *               - color: "Rojo"
  *                 talle: "M"
  *                 cantidad: 50
+ *                 precio: 1200
  *               - color: "Azul"
  *                 talle: "L"
  *                 cantidad: 30
+ *                 precio: 1100
  *             tipoDePrenda: "Camisa"
  *     responses:
  *       201:
@@ -127,15 +123,15 @@ const {
  *             example:
  *               id: "RPPRO 01-23"
  *               nombre: "Remera básica"
- *               precio: 1200
- *               tipoDePrendaId: 1
  *               stockProductos:
  *                 - stock: 50
+ *                   precio: 1200
  *                   color:
  *                     nombre: "Rojo"
  *                   talle:
  *                     nombre: "M"
  *                 - stock: 30
+ *                   precio: 1100
  *                   color:
  *                     nombre: "Azul"
  *                   talle:
@@ -190,7 +186,6 @@ router.post("/",
  *             $ref: '#/components/schemas/Producto'
  *           example:
  *             nombre: "Remera"
- *             precio: 100
  *             tipoDePrenda: "Remera doble"
  *     responses:
  *       200:
@@ -202,7 +197,6 @@ router.post("/",
  *             example:
  *               id: "RPPRO 01-23"
  *               nombre: "Remera"
- *               precio: 100
  *               tipoDePrenda:
  *                 id: 2
  *                 nombre: "Remera doble"
@@ -286,14 +280,15 @@ router.delete("/:id",
  *             example:
  *               - id: "RPPRO 01-22"
  *                 nombre: "Remera básia"
- *                 precio: 1200
  *                 stockProductos:
  *                   - stock: 30
+ *                     precio: 1100
  *                     color:
  *                       nombre: "Azul"
  *                     talle:
  *                       nombre: "L"
  *                   - stock: 50
+ *                     precio: 1200
  *                     color:
  *                       nombre: "Rojo"
  *                     talle:
@@ -303,14 +298,15 @@ router.delete("/:id",
  *                   nombre: "Camisa"
  *               - id: "RPPRO 01-23"
  *                 nombre: "Remera básica"
- *                 precio: 1200
  *                 stockProductos:
  *                   - stock: 30
+ *                     precio: 1100
  *                     color:
  *                       nombre: "Azul"
  *                     talle:
  *                       nombre: "L"
  *                   - stock: 50
+ *                     precio: 1200
  *                     color:
  *                       nombre: "Rojo"
  *                     talle:
@@ -346,14 +342,15 @@ router.get("/", getAllProductos);
  *             example:
  *               id: "RPPRO 01-23"
  *               nombre: "Remera básica"
- *               precio: 1200
  *               stockProductos:
  *                 - stock: 50
+ *                   precio: 1200
  *                   color:
  *                     nombre: "Rojo"
  *                   talle:
  *                     nombre: "M"
  *                 - stock: 30
+ *                   precio: 1100
  *                   color:
  *                     nombre: "Azul"
  *                   talle:
@@ -397,14 +394,15 @@ router.get("/:id",
  *             example:
  *               id: "RPPRO 01-23"
  *               nombre: "Remera básica"
- *               precio: 1200
  *               stockProductos:
  *                 - stock: 50
+ *                   precio: 1200
  *                   color:
  *                     nombre: "Rojo"
  *                   talle:
  *                     nombre: "M"
  *                 - stock: 30
+ *                   precio: 1100
  *                   color:
  *                     nombre: "Azul"
  *                   talle:

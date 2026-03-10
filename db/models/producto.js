@@ -35,10 +35,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true
-    },
-    precio: {
-      type: DataTypes.INTEGER,
-      allowNull: false
     }
   }, {
     sequelize,

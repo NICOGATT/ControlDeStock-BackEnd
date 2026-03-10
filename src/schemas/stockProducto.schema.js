@@ -1,13 +1,6 @@
 const joi = require('joi');
 const { colorYTalleSchema, idSchema } = require('./producto.schema');
 
-const numberSchema = joi.number().integer().min(0).required().messages({
-  'number.base': 'La cantidad debe ser un número',
-  'number.integer': 'La cantidad debe ser un número entero',
-  'number.min': 'La cantidad debe ser al menos 0',
-  'any.required': 'La cantidad es requerida',
-});
-
 const arrayOfColorYTalleSchema = (schema) => joi.array().items(schema).min(1).required()
   .custom((value, helpers) => {
       const seen = new Set();
@@ -27,6 +20,12 @@ const arrayOfColorYTalleSchema = (schema) => joi.array().items(schema).min(1).re
       'array.unique': 'No se permiten combinaciones repetidas de color y talle',
     });
 
+const colorYTalleUpdateSchema = joi.object({
+  color: colorYTalleSchema.extract('color').label('color'),
+  talle: colorYTalleSchema.extract('talle').label('talle'),
+  cantidad: colorYTalleSchema.extract('cantidad').label('cantidad').optional(),
+  precio: colorYTalleSchema.extract('precio').label('precio').optional(),
+})
 
 const createStockProductoSchema = joi.object({
   coloresYTalles: arrayOfColorYTalleSchema(colorYTalleSchema),
@@ -34,7 +33,7 @@ const createStockProductoSchema = joi.object({
 });
 
 const updateStockProductoSchema = joi.object({
-  coloresYTalles: arrayOfColorYTalleSchema(colorYTalleSchema),
+  coloresYTalles: arrayOfColorYTalleSchema(colorYTalleUpdateSchema),
   productoId: idSchema,
 });
 
