@@ -3,7 +3,7 @@
     "username": "root",
     "password": "9364Nico@",
     "database": "control_stock_db",
-    "host": "127.0.0.1",
+    "host": "mysql",
     "port": "3306",
     "dialect": "mysql"
   }

@@ -1,12 +1,17 @@
 FROM node:20-alpine
 
-WORKDIR src/index.js
+WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install 
+RUN npm install
+
+COPY . .
+
+RUN echo "=== CONTENIDO DE /app ===" && ls -R /app
+
+EXPOSE 3000
 
 CMD ["npm", "start"]
-
 
 

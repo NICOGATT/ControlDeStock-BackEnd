@@ -1,0 +1,29 @@
+version: '3.9'
+
+services: 
+  backend: 
+    build: . 
+    container_name: controlDeStock-Backend
+    ports: 
+      - '3000:3000'
+    env_file: 
+      - .env
+    depends_on: 
+      - mysql
+    restart: unless-stopped 
+  
+  mysql: 
+    image: mysql:8.0
+    container_name: control_stock_db
+    ports: 
+      - '3307:3306'
+    environment: 
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: control_stock_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 9364Nico@
+    volumes: 
+      - mysql_data:/var/lib/mysql
+    restart: unless-stopped 
+volumes:
+  mysql_data: 
