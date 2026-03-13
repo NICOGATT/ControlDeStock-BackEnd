@@ -1,13 +1,16 @@
-// Crear la base de datos si no existe antes de inicializar Sequelize
 const mysql = require('mysql2/promise');
-const dbConfig = require('./config/config.json').development;
 
 async function ensureDBExists() {
-  const { database, username, password, host, port } = dbConfig;
+  const host = process.env.DB_HOST || '127.0.0.1';
+  const port = process.env.DB_PORT || '3306';
+  const user = process.env.DB_USER || 'root';
+  const password = process.env.DB_PASSWORD || '';
+  const database = process.env.DB_NAME || 'control_stock_db';
+
   const connection = await mysql.createConnection({
     host,
     port,
-    user: username,
+    user,
     password
   });
   await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\``);

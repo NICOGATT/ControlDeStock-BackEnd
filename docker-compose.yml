@@ -6,12 +6,18 @@ services:
     container_name: controlDeStock-Backend
     ports: 
       - '3000:3000'
-    env_file: 
-      - .env
+    environment:
+      - NODE_ENV=docker
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=control_stock_db
+      - DB_USER=root
+      - DB_PASSWORD=root123
     depends_on: 
-      - mysql
+      mysql:
+        condition: service_healthy
     restart: unless-stopped 
-  
+
   mysql: 
     image: mysql:8.0
     container_name: control_stock_db
@@ -20,10 +26,14 @@ services:
     environment: 
       MYSQL_ROOT_PASSWORD: root123
       MYSQL_DATABASE: control_stock_db
-      MYSQL_USER: root
-      MYSQL_PASSWORD: 9364Nico@
     volumes: 
       - mysql_data:/var/lib/mysql
-    restart: unless-stopped 
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s 
 volumes:
   mysql_data: 

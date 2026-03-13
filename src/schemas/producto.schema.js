@@ -6,9 +6,9 @@ const stringSchema = joi.string().min(1).messages({
   "string.min": "El campo debe tener al menos 1 caracter",
 });
 
-const idSchema = stringSchema.pattern(/^RPPRO \d{2}-\d{2}$/).required().label("id").messages(
+const idSchema = stringSchema.pattern(/^(RPPRO|RPM) \d{2}-\d{2}$/).required().label("id").messages(
     {
-      "string.pattern.base": "El id debe seguir el formato RPPRO XX-XX, donde XX son números",
+      "string.pattern.base": "El id debe seguir el formato RPPRO XX-XX o RPM XX-XX, donde XX son números",
       "any.required": "El campo id es obligatorio",
     }
   )

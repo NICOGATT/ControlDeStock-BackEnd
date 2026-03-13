@@ -3,8 +3,22 @@
     "username": "root",
     "password": "9364Nico@",
     "database": "control_stock_db",
-    "host": "mysql",
+    "host": "mysql-control-stock",
     "port": "3306",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "define": {
+      "timestamps": false
+    }
+  },
+  "docker": {
+    "username": "root",
+    "password": "9364Nico@",
+    "database": "control_stock_db",
+    "host": "mysql-control-stock",
+    "port": "3306",
+    "dialect": "mysql",
+    "define": {
+      "timestamps": false
+    }
   }
 }
