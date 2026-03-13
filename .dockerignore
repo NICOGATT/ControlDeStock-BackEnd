@@ -4,7 +4,6 @@ Dockerfile
 docker-compose.yml
 .git
 .gitignore
-.env
 .vscode
 coverage
 dist
