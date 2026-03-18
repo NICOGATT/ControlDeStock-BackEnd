@@ -141,9 +141,9 @@ const deleteStockProducto = async (req, res) => {
 //7. Obtener todos los stocks de productos
 const getAllStockProductos = async (_, res) => {
   const stockProductos = await StockProducto.findAll({
-    attributes: [ 'stock'],
+    attributes: [ 'stock', 'precio'],
     include: [
-      { model: Producto, as: 'producto', attributes: ['id', 'nombre', 'precio'] },
+      { model: Producto, as: 'producto', attributes: ['id', 'nombre'] },
       { model: Color, as: 'color', attributes: ['id', 'nombre'] },
       { model: Talle, as: 'talle', attributes: ['id', 'nombre'] },
     ],
