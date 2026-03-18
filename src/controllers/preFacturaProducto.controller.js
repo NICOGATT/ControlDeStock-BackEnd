@@ -3,15 +3,18 @@ const { PreFacturaProducto, Producto, PreFactura, Color, Talle ,Cliente } = requ
 //1. Agregar productos a una prefactura
 const addProductsToPreFactura = async (req, res) => {
   const { productos, preFacturaId } = req.body;
+  console.log("Recibido - preFacturaId:", preFacturaId, "productos:", productos);
   
   const promesas = productos.map(async (elemento) => {
-    await PreFacturaProducto.create({
+    const created = await PreFacturaProducto.create({
       preFacturaId,
       productoId: elemento.productoId,
       talleId: elemento.talleId,
       colorId: elemento.colorId,
       cantidad: elemento.cantidad,
     });
+    console.log("Producto creado:", created);
+    return created;
   });
 
   await Promise.all(promesas);
@@ -125,7 +128,7 @@ const getAllPreFacturasWithProducts = async (_, res) => {
           {
             model: Producto,
             as: "producto",
-            attributes: ["id", "nombre", "precio"],
+            attributes: ["id", "nombre"],
           },
           {
             model: Color,
@@ -165,7 +168,7 @@ const getPreFacturaWithProducts = async (req, res) => {
           {
             model: Producto,
             as: "producto",
-            attributes: ["id", "nombre", "precio"],
+            attributes: ["id", "nombre"],
           },
           {
             model: Color,

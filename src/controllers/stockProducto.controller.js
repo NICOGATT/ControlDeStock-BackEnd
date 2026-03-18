@@ -141,13 +141,9 @@ const deleteStockProducto = async (req, res) => {
 //7. Obtener todos los stocks de productos
 const getAllStockProductos = async (_, res) => {
   const stockProductos = await StockProducto.findAll({
-<<<<<<< HEAD
     attributes: [ 'stock', 'precio'],
-=======
-    attributes: [ 'stock', 'productoId', 'colorId', 'talleId'],
->>>>>>> 154124d (feat(StockProducto) : Se agrego los tres ids.)
     include: [
-      { model: Producto, as: 'producto', attributes: ['id', 'nombre', 'precio'] },
+      { model: Producto, as: 'producto', attributes: ['id', 'nombre'] },
       { model: Color, as: 'color', attributes: ['id', 'nombre'] },
       { model: Talle, as: 'talle', attributes: ['id', 'nombre'] },
     ],

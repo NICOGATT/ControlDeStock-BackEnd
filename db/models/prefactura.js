@@ -30,6 +30,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false
     },
+    clienteId: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    direccionId: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    }
   }, {
     sequelize,
     modelName: 'PreFactura',
