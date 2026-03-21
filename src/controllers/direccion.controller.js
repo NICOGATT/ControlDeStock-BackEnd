@@ -6,14 +6,22 @@ const createDireccion = genericController.createModel(Direccion);
 
 //2. Editar una direccion de un cliente
 const updateDireccion = async (req, res) => {
-  const { direccion, clienteId, direccionNueva } = req.body;
+  const { direccion, clienteId, direccionNueva, codigoPostal, ciudad, provincia } = req.body;
+
+  const updateData = {};
+  if (direccionNueva) updateData.direccion = direccionNueva;
+  if (codigoPostal) updateData.codigoPostal = codigoPostal;
+  if (ciudad) updateData.ciudad = ciudad;
+  if (provincia) updateData.provincia = provincia;
 
   await Direccion.update(
-    { direccion: direccionNueva },
+    updateData,
     { where: { direccion, clienteId } }
   );
 
-  const updatedDireccion = await Direccion.findOne({ where: { direccion:direccionNueva, clienteId } });
+  // Buscar por la dirección nueva si se actualizó, si no por la original
+  const direccionBusqueda = direccionNueva || direccion;
+  const updatedDireccion = await Direccion.findOne({ where: { direccion: direccionBusqueda, clienteId } });
 
   res.status(200).json(updatedDireccion);
 }

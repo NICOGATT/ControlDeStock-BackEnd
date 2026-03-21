@@ -22,14 +22,63 @@ const {
  *     Direccion:
  *       type: object
  *       properties:
+ *         id:
+ *           type: integer
+ *           description: ID de la dirección
+ *           example: 1
  *         direccion:
  *           type: string
- *           description: Dirección del cliente
+ *           description: Dirección del cliente (única)
  *           example: "Av. Libertad 123"
  *         clienteId:
  *           type: integer
  *           description: ID del cliente al que pertenece la dirección
  *           example: 1
+ *         codigoPostal:
+ *           type: string
+ *           description: Código postal (4 o 5 dígitos)
+ *           example: "1425"
+ *         ciudad:
+ *           type: string
+ *           description: Ciudad
+ *           example: "Buenos Aires"
+ *         provincia:
+ *           type: string
+ *           description: Provincia
+ *           example: "CABA"
+ *       required:
+ *         - direccion
+ *         - clienteId
+ *         - codigoPostal
+ *         - ciudad
+ *         - provincia
+ *     DireccionActualizar:
+ *       type: object
+ *       properties:
+ *         direccion:
+ *           type: string
+ *           description: Dirección actual (requerida para identificar)
+ *           example: "Av. Libertad 123"
+ *         clienteId:
+ *           type: integer
+ *           description: ID del cliente (requerido para identificar)
+ *           example: 1
+ *         direccionNueva:
+ *           type: string
+ *           description: Nueva dirección (opcional)
+ *           example: "Av. Libertad 456"
+ *         codigoPostal:
+ *           type: string
+ *           description: Código postal (4 o 5 dígitos, opcional)
+ *           example: "1426"
+ *         ciudad:
+ *           type: string
+ *           description: Ciudad (opcional)
+ *           example: "La Plata"
+ *         provincia:
+ *           type: string
+ *           description: Provincia (opcional)
+ *           example: "Buenos Aires"
  *       required:
  *         - direccion
  *         - clienteId
@@ -51,6 +100,9 @@ const {
  *           example:
  *             direccion: "Av. Libertad 123"
  *             clienteId: 1
+ *             codigoPostal: "1425"
+ *             ciudad: "Buenos Aires"
+ *             provincia: "CABA"
  *     responses:
  *       201:
  *         description: Dirección creada exitosamente
@@ -62,6 +114,9 @@ const {
  *               id: 1
  *               direccion: "Av. Libertad 123"
  *               clienteId: 1
+ *               codigoPostal: "1425"
+ *               ciudad: "Buenos Aires"
+ *               provincia: "CABA"
  *       400:
  *         description: Error de validación
  *         content:
@@ -90,25 +145,14 @@ router.post('/',
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               direccion:
- *                 type: string
- *                 description: Dirección actual a modificar
- *               clienteId:
- *                 type: integer
- *                 description: ID del cliente
- *               direccionNueva:
- *                 type: string
- *                 description: Nueva dirección
- *             required:
- *               - direccion
- *               - clienteId
- *               - direccionNueva
+ *             $ref: '#/components/schemas/DireccionActualizar'
  *           example:
  *             direccion: "Av. Libertad 123"
  *             clienteId: 1
  *             direccionNueva: "Av. Libertad 456"
+ *             codigoPostal: "1425"
+ *             ciudad: "Buenos Aires"
+ *             provincia: "CABA"
  *     responses:
  *       200:
  *         description: Dirección actualizada exitosamente
@@ -116,6 +160,13 @@ router.post('/',
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Direccion'
+ *             example:
+ *               id: 1
+ *               direccion: "Av. Libertad 456"
+ *               clienteId: 1
+ *               codigoPostal: "1425"
+ *               ciudad: "Buenos Aires"
+ *               provincia: "CABA"
  *       404:
  *         description: Dirección no encontrada
  *         content:
@@ -199,9 +250,15 @@ router.delete('/',
  *               - id: 1
  *                 direccion: "Av. Libertad 123"
  *                 clienteId: 1
+ *                 codigoPostal: "1425"
+ *                 ciudad: "Buenos Aires"
+ *                 provincia: "CABA"
  *               - id: 2
  *                 direccion: "Calle Falsa 456"
  *                 clienteId: 1
+ *                 codigoPostal: "1426"
+ *                 ciudad: "Buenos Aires"
+ *                 provincia: "CABA"
  */
 router.get('/cliente/:clienteId', 
   getDireccionesByCliente
@@ -227,9 +284,15 @@ router.get('/cliente/:clienteId',
  *               - id: 1
  *                 direccion: "Av. Libertad 123"
  *                 clienteId: 1
+ *                 codigoPostal: "1425"
+ *                 ciudad: "Buenos Aires"
+ *                 provincia: "CABA"
  *               - id: 2
  *                 direccion: "San Martín 500"
  *                 clienteId: 2
+ *                 codigoPostal: "1425"
+ *                 ciudad: "Buenos Aires"
+ *                 provincia: "CABA"
  */
 router.get('/', 
   getAllDirecciones

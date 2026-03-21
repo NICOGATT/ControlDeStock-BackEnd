@@ -32,6 +32,10 @@ const validateDireccionNonExists = async (req, res, next) => {
 const validateDireccionName = async (req, res, next) => {
   const { direccionNueva } = req.body;
 
+  if (!direccionNueva) {
+    return next(); // Si no se proporciona una nueva dirección, no es necesario validar el nombre
+  }
+
   const direccionInstance = await Direccion.findOne({ where: { direccion: direccionNueva } });
   if (direccionInstance) {
     const clienteInstance = await Cliente.findByPk(direccionInstance.clienteId);

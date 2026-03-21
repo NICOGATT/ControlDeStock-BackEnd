@@ -28,6 +28,18 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
+      codigoPostal: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      ciudad: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      provincia: {
+        type: DataTypes.STRING,
+        allowNull: false
+      }
     },
     {
       sequelize,

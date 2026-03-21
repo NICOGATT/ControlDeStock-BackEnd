@@ -1,36 +1,38 @@
-const joi = require('joi');
+const joi = require("joi");
+
+const stringSchema = joi.string().min(1).messages({
+  "string.base": "{#label} debe ser un texto.",
+  "string.empty": "{#label} no puede estar vacío.",
+  "string.min": "{#label} debe tener al menos {#limit} caracteres.",
+  "any.required": "{#label} es un campo obligatorio.",
+});
+
+const numberSchema = joi.number().min(1).integer().messages({
+  "number.base": "{#label} debe ser un número.",
+  "number.min": "{#label} debe ser un número positivo.",
+  "number.integer": "{#label} debe ser un número entero.",
+  "any.required": "{#label} es un campo obligatorio.",
+});
 
 const direccionSchema = joi.object({
-  direccion: joi.string().min(1).required().messages({
-    'string.base': 'La dirección debe ser una cadena de texto.',
-    'string.empty': 'La dirección no puede estar vacía.',
-    'any.required': 'La dirección es un campo obligatorio.'
+  direccion: stringSchema.required().label("dirección"),
+  clienteId: numberSchema.required().label("clienteId"),
+  codigoPostal: joi.string().required().pattern(/^\d{4,5}$/).label("codigoPostal").messages({
+    "string.pattern.base": `"codigoPostal" debe ser un número de 4 o 5 dígitos`,
   }),
-  clienteId: joi.number().min(1).integer().required().messages({
-    'number.base': 'El ID del cliente debe ser un número.',
-    'number.min': 'El ID del cliente debe ser un número positivo.',
-    'number.integer': 'El ID del cliente debe ser un número entero.',
-    'any.required': 'El ID del cliente es un campo obligatorio.'
-  })
+  ciudad: stringSchema.required().label("ciudad"),
+  provincia: stringSchema.required().label("provincia"),
 });
 
 const direccionUpdateSchema = joi.object({
-  direccion: joi.string().min(1).required().messages({
-    'string.base': 'La dirección debe ser una cadena de texto.',
-    'string.empty': 'La dirección no puede estar vacía.',
-    'any.required': 'La dirección es un campo obligatorio.'
+  direccion: stringSchema.required().label("dirección"),
+  clienteId: numberSchema.required().label("clienteId"),
+  direccionNueva: stringSchema.optional().label("direccionNueva"),
+  codigoPostal: joi.string().pattern(/^\d{4,5}$/).label("codigoPostal").messages({
+    "string.pattern.base": `"codigoPostal" debe ser un número de 4 o 5 dígitos`,
   }),
-  clienteId: joi.number().min(1).integer().required().messages({
-    'number.base': 'El ID del cliente debe ser un número.',
-    'number.min': 'El ID del cliente debe ser un número positivo.',
-    'number.integer': 'El ID del cliente debe ser un número entero.',
-    'any.required': 'El ID del cliente es un campo obligatorio.'
-  }),
-  direccionNueva: joi.string().min(1).required().messages({
-    'string.base': 'La dirección debe ser una cadena de texto.',
-    'string.empty': 'La dirección no puede estar vacía.',
-    'any.required': 'La dirección es un campo obligatorio.'
-  }),
+  ciudad: stringSchema.optional().label("ciudad"),
+  provincia: stringSchema.optional().label("provincia"),
 });
 
 module.exports = { direccionSchema, direccionUpdateSchema };
