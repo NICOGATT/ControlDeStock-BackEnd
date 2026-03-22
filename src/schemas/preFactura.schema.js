@@ -8,27 +8,32 @@ const dateSchema = joi.object({
   }),
 });
 
+const stringSchema = joi.string().min(1).messages({
+  "string.base": "{#label} debe ser una cadena de texto",
+  "string.empty": "{#label} no puede estar vacío",
+  "string.min": "{#label} debe tener al menos 1 carácter",
+  "any.required": "{#label} es obligatorio",
+});
+
 const preFacturaSchema = joi.object({
-  cliente: joi.string().min(3).max(100).required().messages({
-    "string.base": "El cliente debe ser una cadena de texto",
-    "string.empty": "El cliente es obligatorio",
-    "string.min": "El cliente debe tener al menos 3 caracteres",
-    "string.max": "El cliente no debe exceder los 100 caracteres",
-    "any.required": "El cliente es obligatorio",
+  cliente: stringSchema.label("cliente").required(),
+  telefono: stringSchema.required().pattern(/^\d{10}$/).label("teléfono").messages({
+    "string.pattern.base": `"telefono" debe ser un número de 10 dígitos`,
   }),
-  telefono: joi.string().pattern(/^\d{10}$/).required().messages({
-    "string.base": "El teléfono debe ser una cadena de texto",
-    "string.empty": "El teléfono es obligatorio",
-    "string.pattern.base": "El teléfono debe tener exactamente 10 dígitos",
-    "any.required": "El teléfono es obligatorio",
+  direccion: stringSchema.required().label("dirección"),
+  codigoPostal: stringSchema.required().pattern(/^\d{4,5}$/).label("codigoPostal").messages({
+    "string.pattern.base": `"codigoPostal" debe ser un número de 4 o 5 dígitos`,
   }),
-  direccion: joi.string().min(5).max(200).required().messages({
-    "string.base": "La dirección debe ser una cadena de texto",
-    "string.empty": "La dirección es obligatoria",
-    "string.min": "La dirección debe tener al menos 5 caracteres",
-    "string.max": "La dirección no debe exceder los 200 caracteres",
-    "any.required": "La dirección es obligatoria", 
-  })
+  ciudad: stringSchema.required().label("ciudad"),
+  provincia: stringSchema.required().label("provincia"),
+  cuit: stringSchema.required().pattern(/^\d{2}-\d{8}-\d{1}$/).label("cuit").messages({
+    "string.pattern.base": `"cuit" debe tener el formato XX-XXXXXXXX-X`
+  }),
+  email: stringSchema.required().email().label("email").messages({
+    "string.email": `"email" debe ser una dirección de correo electrónico válida`,
+  }),
+  nombreEmpresa: stringSchema.required().label("nombreEmpresa"),
+  condicionTributaria: stringSchema.required().label("condiciónTributaria"),
 });
 
 module.exports = { preFacturaSchema, dateSchema };

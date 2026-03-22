@@ -18,7 +18,7 @@ const clienteSchema = genericSchema.keys({
   }),
   ciudad: stringSchema.required().label("ciudad"),
   provincia: stringSchema.required().label("provincia"),
-  cuit: stringSchema.required().pattern(/^\d{2}-\d{8}-\d{1}$/).label("CUIT").messages({
+  cuit: stringSchema.required().pattern(/^\d{2}-\d{8}-\d{1}$/).label("cuit").messages({
     "string.pattern.base": `"cuit" debe tener el formato XX-XXXXXXXX-X`
   }),
   email: stringSchema.required().email().label("email").messages({

@@ -58,35 +58,113 @@ const {
  *             properties:
  *               cliente:
  *                 type: string
- *                 description: Nombre del cliente asociado a la preFactura
+ *                 description: Nombre del cliente
  *               telefono:
  *                 type: string
- *                 description: Teléfono del cliente asociado a la preFactura (10 dígitos)
+ *                 description: Teléfono del cliente (10 dígitos)
  *               direccion:
  *                 type: string
  *                 description: Dirección del cliente
+ *               codigoPostal:
+ *                 type: string
+ *                 description: Código postal (4-5 dígitos)
+ *               ciudad:
+ *                 type: string
+ *                 description: Ciudad
+ *               provincia:
+ *                 type: string
+ *                 description: Provincia
+ *               cuit:
+ *                 type: string
+ *                 description: CUIT en formato XX-XXXXXXXX-X
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email del cliente
+ *               nombreEmpresa:
+ *                 type: string
+ *                 description: Nombre de la empresa
+ *               condicionTributaria:
+ *                 type: string
+ *                 description: Condición tributaria del cliente
  *             required:
  *               - cliente
  *               - telefono
  *               - direccion
+ *               - codigoPostal
+ *               - ciudad
+ *               - provincia
+ *               - cuit
+ *               - email
+ *               - nombreEmpresa
+ *               - condicionTributaria
  *           example:
  *             cliente: "Juan Perez"
  *             telefono: "1234567890"
  *             direccion: "Av. Libertad 123"
+ *             codigoPostal: "1425"
+ *             ciudad: "Buenos Aires"
+ *             provincia: "Buenos Aires"
+ *             cuit: "20-15678901-2"
+ *             email: "juan@example.com"
+ *             nombreEmpresa: "Perez SRL"
+ *             condicionTributaria: "Responsable Inscripto"
  *     responses:
  *       201:
  *         description: PreFactura creada exitosamente
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/PreFactura'
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: ID de la preFactura
+ *                 cliente:
+ *                   type: object
+ *                   properties:
+ *                     nombre:
+ *                       type: string
+ *                     telefono:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     cuit:
+ *                       type: string
+ *                     nombreEmpresa:
+ *                       type: string
+ *                     condicionTributaria:
+ *                       type: string
+ *                 fecha:
+ *                   type: string
+ *                   format: date-time
+ *                   description: Fecha de creación
+ *                 direccion:
+ *                   type: object
+ *                   properties:
+ *                     direccion:
+ *                       type: string
+ *                     codigoPostal:
+ *                       type: string
+ *                     ciudad:
+ *                       type: string
+ *                     provincia:
+ *                       type: string
  *             example:
  *               id: 3
  *               cliente:
  *                 nombre: "Juan Perez"
  *                 telefono: "1234567890"
+ *                 email: "juan@example.com"
+ *                 cuit: "20-15678901-2"
+ *                 nombreEmpresa: "Perez SRL"
+ *                 condicionTributaria: "Responsable Inscripto"
  *               fecha: "2026-02-22T01:33:50.000Z"
- *               direccion: "Av. Libertad 1234"
+ *               direccion:
+ *                 direccion: "Av. Libertad 123"
+ *                 codigoPostal: "1425"
+ *                 ciudad: "Buenos Aires"
+ *                 provincia: "Buenos Aires"
  *       400:
  *         description: Error de validación
  *         content:
@@ -94,8 +172,10 @@ const {
  *             example:
  *               - atributo: "cliente"
  *                 mensaje: "El cliente es obligatorio"
- *               - atributo: "direccion"
- *                 mensaje: "La dirección es obligatoria"
+ *               - atributo: "telefono"
+ *                 mensaje: "telefono debe ser un número de 10 dígitos"
+ *               - atributo: "cuit"
+ *                 mensaje: "cuit debe tener el formato XX-XXXXXXXX-X"
  */
 router.post('/',
   validatePreFacturaSchema,
