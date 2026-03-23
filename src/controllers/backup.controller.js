@@ -1,129 +1,152 @@
-// Importar módulos necesarios
-const exec = require('child_process').execFile; // Para ejecutar comandos del sistema (mysqldump, mysql)
-const fs = require('fs'); // Para operaciones de archivos
-const path = require('path'); // Para manipular rutas de archivos
-
-// Función para obtener la ruta a mysqldump según el SO
-const getMysqldumpPath = () => {
-  // Si está definida en variables de entorno, usarla
-  if (process.env.MYSQL_BIN_PATH) {
-    const path1 = path.join(process.env.MYSQL_BIN_PATH, 'mysqldump.exe');
-    if (fs.existsSync(path1)) {
-      console.log('✓ mysqldump encontrado en:', path1);
-      return path1;
-    }
-  }
-  
-  // En Windows, intentar rutas comunes de MySQL
-  if (process.platform === 'win32') {
-    const commonPaths = [
-      'C:\\Program Files\\MySQL\\MySQL Server 9.6\\bin\\mysqldump.exe',
-      'C:\\Program Files\\MySQL\\MySQL Server 9.0\\bin\\mysqldump.exe',
-      'C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysqldump.exe',
-      'C:\\Program Files\\MySQL\\MySQL Server 5.7\\bin\\mysqldump.exe',
-      'C:\\Program Files (x86)\\MySQL\\MySQL Server 8.0\\bin\\mysqldump.exe',
-      'C:\\Program Files (x86)\\MySQL\\MySQL Server 5.7\\bin\\mysqldump.exe'
-    ];
-    
-    for (const p of commonPaths) {
-      if (fs.existsSync(p)) {
-        console.log('✓ mysqldump encontrado en:', p);
-        return p;
-      }
-    }
-    
-    console.warn('⚠ mysqldump no encontrado en rutas conocidas de MySQL');
-  }
-  
-  // En Unix/Linux/Mac, normalmente está en el PATH
-  console.log('ℹ Intentando usar mysqldump desde PATH');
-  return 'mysqldump';
-};
-
-// Función para obtener la ruta a mysql según el SO
-const getMysqlPath = () => {
-  // Si está definida en variables de entorno, usarla
-  if (process.env.MYSQL_BIN_PATH) {
-    const path1 = path.join(process.env.MYSQL_BIN_PATH, 'mysql.exe');
-    if (fs.existsSync(path1)) {
-      console.log('✓ mysql encontrado en:', path1);
-      return path1;
-    }
-  }
-  
-  // En Windows, intentar rutas comunes de MySQL
-  if (process.platform === 'win32') {
-    const commonPaths = [
-      'C:\\Program Files\\MySQL\\MySQL Server 9.6\\bin\\mysql.exe',
-      'C:\\Program Files\\MySQL\\MySQL Server 9.0\\bin\\mysql.exe',
-      'C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe',
-      'C:\\Program Files\\MySQL\\MySQL Server 5.7\\bin\\mysql.exe',
-      'C:\\Program Files (x86)\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe',
-      'C:\\Program Files (x86)\\MySQL\\MySQL Server 5.7\\bin\\mysql.exe'
-    ];
-    
-    for (const p of commonPaths) {
-      if (fs.existsSync(p)) {
-        console.log('✓ mysql encontrado en:', p);
-        return p;
-      }
-    }
-    
-    console.warn('⚠ mysql no encontrado en rutas conocidas de MySQL');
-  }
-  
-  // En Unix/Linux/Mac, normalmente está en el PATH
-  console.log('ℹ Intentando usar mysql desde PATH');
-  return 'mysql';
-};
+const exec = require('child_process').exec;
+const fs = require('fs');
+const path = require('path');
 
 const createBackup = async (req, res) => {
-  // Obtener el directorio de backups que fue validado en el middleware
-  const backupDir = req.backupDir;
+  console.log('=== INICIO BACKUP ===');
   
-  // Generar un timestamp con el formato YYYY-MM-DD para el nombre del archivo
-  // Usar solo la fecha sin hora para que sea más legible
+  // 1. Mostrar variables de entorno disponibles
+  console.log('Variables de entorno:');
+  console.log('  DB_HOST:', process.env.DB_HOST);
+  console.log('  DB_PORT:', process.env.DB_PORT);
+  console.log('  DB_USER:', process.env.DB_USER);
+  console.log('  DB_PASSWORD:', process.env.DB_PASSWORD ? '***' : 'undefined');
+  console.log('  DB_NAME:', process.env.DB_NAME);
+
+  const backupDir = req.backupDir;
+  console.log('  backupDir:', backupDir);
+
+  // 2. Verificar que el directorio existe y es escribible
+  if (!fs.existsSync(backupDir)) {
+    console.error('❌ Directorio de backups no existe:', backupDir);
+    return res.status(500).json({ 
+      mensaje: 'Error al crear el backup',
+      error: 'Directorio de backups no existe'
+    });
+  }
+
+  try {
+    fs.accessSync(backupDir, fs.constants.W_OK);
+    console.log('✓ Directorio de backups es escribible');
+  } catch (err) {
+    console.error('❌ Sin permisos de escritura:', err.message);
+    return res.status(500).json({ 
+      mensaje: 'Error al crear el backup',
+      error: 'Sin permisos de escritura en directorio de backups'
+    });
+  }
+
+  // 3. Construir variables con valores correctos para Docker
+  const dbHost = process.env.DB_HOST || 'mysql';
+  const dbPort = process.env.DB_PORT || '3306';  // IMPORTANTE: 3306 dentro de Docker
+  const dbUser = process.env.DB_USER || 'root';
+  const dbPassword = process.env.DB_PASSWORD || 'root123';
+  const dbName = process.env.DB_NAME || 'control_stock_db';
+
+  console.log('Valores finales:');
+  console.log('  Host:', dbHost);
+  console.log('  Puerto:', dbPort);
+  console.log('  Usuario:', dbUser);
+  console.log('  Base:', dbName);
+
   const timestamp = new Date().toISOString().split('T')[0];
-  // Construir la ruta completa del archivo de backup
   const backupFile = path.join(backupDir, `backup_${timestamp}.sql`);
+  console.log('  Archivo:', backupFile);
 
-  // Ejecutar el comando mysqldump (usar execFile es más seguro que exec)
-  // execFile no permite inyección de comandos como ejecutaría exec
-  const mysqldump = exec(getMysqldumpPath(), [
-    // Host del servidor MySQL
-    `-h${process.env.DB_HOST || '127.0.0.1'}`,
-    // Puerto del servidor MySQL
-    `-P${process.env.DB_PORT || '3307'}`,
-    // Usuario de la base de datos (por defecto 'root')
-    `-u${process.env.DB_USER || 'root'}`,
-    // Contraseña de la base de datos
-    `-p${process.env.DB_PASSWORD || 'root'}`,
-    // No incluir información de GTID_PURGED (evita conflictos al restaurar)
-    '--set-gtid-purged=OFF',
-    // Nombre de la base de datos a respaldar
-    process.env.DB_NAME || 'control_stock_db',
-    // Guardar el dump en un archivo en lugar de stdout
-    '--result-file=' + backupFile
-  ], (error, stdout, stderr) => {
-    // Callback que se ejecuta cuando mysqldump termina
+  // 4. Verificar si mysqldump existe
+  const checkMysqldump = () => {
+    return new Promise((resolve, reject) => {
+      exec('which mysqldump', (err, stdout, stderr) => {
+        if (stdout.trim()) {
+          console.log('✓ mysqldump encontrado en PATH:', stdout.trim());
+          resolve('mysqldump');
+        } else {
+          reject(new Error('mysqldump no encontrado en PATH'));
+        }
+      });
+    });
+  };
 
-    // Si hay error, registrarlo en la consola
+  try {
+    const mysqldumpBin = await checkMysqldump();
+    console.log('✓ Usando mysqldump:', mysqldumpBin);
+  } catch (err) {
+    console.error('❌ mysqldump no disponible:', err.message);
+    return res.status(500).json({ 
+      mensaje: 'Error al crear el backup',
+      error: 'mysqldump no está disponible en el contenedor',
+      detail: err.message
+    });
+  }
+
+  // 5. Verificar conexión a MySQL primero
+  const testConnection = () => {
+    return new Promise((resolve, reject) => {
+      const testCmd = `mysqladmin ping -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} --ssl-verify-server-cert=0 --default-auth=mysql_native_password`;
+      console.log('Probando conexión con:', testCmd.replace(dbPassword, '***'));
+      
+      exec(testCmd, (err, stdout, stderr) => {
+        if (err) {
+          console.error('❌ Error de conexión MySQL:', err.message);
+          console.error('   stderr:', stderr);
+          reject(err);
+        } else {
+          console.log('✓ Conexión a MySQL exitosa');
+          resolve();
+        }
+      });
+    });
+  };
+
+  try {
+    await testConnection();
+  } catch (connErr) {
+    console.error('❌ Error de conexión:', connErr.message);
+    return res.status(500).json({ 
+      mensaje: 'Error al crear el backup',
+      error: 'No se puede conectar a MySQL',
+      detail: connErr.message,
+      hint: 'Verificar DB_HOST, DB_PORT, DB_USER, DB_PASSWORD en variables de entorno'
+    });
+  }
+
+  // 6. Ejecutar mysqldump con autenticación nativa para MySQL 8
+  const mysqldumpCmd = `mysqldump -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} --ssl-verify-server-cert=0 --default-auth=mysql_native_password ${dbName} --result-file=${backupFile}`;
+  console.log('Ejecutando:', mysqldumpCmd.replace(dbPassword, '***'));
+
+  exec(mysqldumpCmd, (error, stdout, stderr) => {
+    console.log('=== RESULTADO mysqldump ===');
+    console.log('stdout:', stdout);
+    console.log('stderr:', stderr);
+    console.log('error:', error);
+
     if (error) {
-      console.error('Error en backup:', error);
-      // Retornar respuesta de error al cliente
+      console.error('❌ Error ejecutando mysqldump:', error.message);
+      console.error('   code:', error.code);
+      console.error('   stderr:', stderr);
       return res.status(500).json({ 
         mensaje: 'Error al crear el backup',
-        error: error.message 
+        error: error.message,
+        stderr: stderr,
+        hint: 'Verificar que mysqldump pueda conectarse a la base de datos'
       });
     }
 
-    // Si el backup fue exitoso, obtener información del archivo
+    // 7. Verificar que el archivo se creó
+    if (!fs.existsSync(backupFile)) {
+      console.error('❌ Archivo de backup no se creó');
+      return res.status(500).json({ 
+        mensaje: 'Error al crear el backup',
+        error: 'El archivo no fue creado'
+      });
+    }
+
     const stats = fs.statSync(backupFile);
-    // Responder con éxito y convertir bytes a MB
+    console.log('✓ Backup creado exitosamente:', stats.size, 'bytes');
+
     res.status(201).json({
       mensaje: 'Backup creado exitosamente',
       archivo: `backup_${timestamp}.sql`,
-      // Convertir bytes a MB y redondear a 2 decimales
       tamaño: `${(stats.size / 1024 / 1024).toFixed(2)} MB`,
       fecha: new Date()
     });
@@ -131,96 +154,63 @@ const createBackup = async (req, res) => {
 };
 
 const getBackups = (req, res) => {
-  // Obtener el directorio de backups validado (siempre existe gracias al middleware)
   const backupDir = req.backupDir;
   
-  // Verificar si el directorio existe (seguridad extra)
   if (!fs.existsSync(backupDir)) {
     return res.status(200).json({ backups: [] });
   }
 
-  // Leer todos los archivos del directorio
   const files = fs.readdirSync(backupDir)
-    // Filtrar solo archivos .sql
     .filter(file => file.endsWith('.sql'))
-    // Mapear cada archivo a un objeto con información útil
     .map(file => {
-      // Construir ruta completa del archivo
       const filePath = path.join(backupDir, file);
-      // Obtener información del archivo (tamaño, fecha creación, etc)
       const stats = fs.statSync(filePath);
       return {
         nombre: file,
-        // Convertir tamaño de bytes a MB con 2 decimales
         tamaño: `${(stats.size / 1024 / 1024).toFixed(2)} MB`,
-        // Fecha de creación del archivo
         fechaCreacion: stats.birthtime
       };
     })
-    // Ordenar por fecha de creación (más recientes primero) - descendente
     .sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
 
-  // Devolver la lista de backups
   res.status(200).json({ backups: files });
 };
 
 const downloadBackup = (req, res) => {
-  // Obtener la ruta completa del archivo (validada en middleware)
   const backupFile = req.backupFile;
-  // Obtener el nombre del archivo (validado en middleware)
   const backupFileName = req.backupFileName;
-
-  // Usar res.download para enviar el archivo al cliente
-  // Los parámetros son: ruta del archivo y nombre que tendrá la descarga
   res.download(backupFile, backupFileName);
 };
 
 const restoreBackup = (req, res) => {
-  // Obtener el directorio de backups
   const backupDir = req.backupDir;
-  // Obtener el nombre del archivo del body (ya validado en middleware)
   const backupFileName = req.backupFileName;
-  // Construir la ruta completa del archivo
   const backupFile = path.join(backupDir, backupFileName);
 
-  // Leer el contenido completo del archivo SQL
-  // Usar 'utf8' para que se devuelva como string en lugar de Buffer
   let sqlContent = fs.readFileSync(backupFile, 'utf8');
 
-  // Filtrar lineas de GTID que pueden causar conflictos
-  // Quitar cualquier línea que contenga SET @@GLOBAL.GTID_PURGED o SET @@SESSION.GTID_EXECUTED
   sqlContent = sqlContent
     .split('\n')
     .filter(line => !line.includes('GTID_PURGED') && !line.includes('GTID_EXECUTED'))
     .join('\n');
 
-  // Ejecutar el cliente mysql para restaurar la base de datos
-  const mysql = exec(getMysqlPath(), [
-    // Host del servidor MySQL
-    `-h${process.env.DB_HOST || '127.0.0.1'}`,
-    // Puerto del servidor MySQL
-    `-P${process.env.DB_PORT || '3307'}`,
-    // Usuario de la base de datos
-    `-u${process.env.DB_USER || 'root'}`,
-    // Contraseña
-    `-p${process.env.DB_PASSWORD || 'root'}`,
-    // Base de datos a restaurar
-    process.env.DB_NAME || 'control_stock_db'
-  ], (error, stdout, stderr) => {
-    // Callback que se ejecuta cuando el comando mysql termina
-    
-    // Si hay error en la ejecución
+  const dbHost = process.env.DB_HOST || 'mysql';
+  const dbPort = process.env.DB_PORT || '3306';
+  const dbUser = process.env.DB_USER || 'root';
+  const dbPassword = process.env.DB_PASSWORD || 'root123';
+  const dbName = process.env.DB_NAME || 'control_stock_db';
+
+  const mysqlCmd = `mysql -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} ${dbName}`;
+  
+  const mysqlProc = exec(mysqlCmd, (error, stdout, stderr) => {
     if (error) {
-      // Registrar el error en la consola del servidor
       console.error('Error en restauración:', error);
-      // Devolver respuesta de error al cliente
       return res.status(500).json({ 
         mensaje: 'Error al restaurar el backup',
         error: error.message 
       });
     }
 
-    // Si la restauración fue exitosa, devolver confirmación
     res.status(200).json({
       mensaje: 'Backup restaurado exitosamente',
       archivo: backupFileName,
@@ -228,14 +218,10 @@ const restoreBackup = (req, res) => {
     });
   });
 
-  // Escribir el contenido SQL en el stdin del proceso mysql
-  // Esto envía el SQL al comando mysql para que lo procese
-  mysql.stdin.write(sqlContent);
-  // Cerrar el stdin para indicar que no hay más datos a procesar
-  mysql.stdin.end();
+  mysqlProc.stdin.write(sqlContent);
+  mysqlProc.stdin.end();
 };
 
-// Exportar todos los controladores para usarlos en las rutas
 module.exports = {
   createBackup,
   getBackups,
