@@ -1,23 +1,24 @@
 const joi = require("joi");
 const { idSchema } = require('./producto.schema');
 
-const numberSchema = joi.number().integer().min(1).required().messages({
-    "number.base": "El campo cantidad debe ser un número entero.",
-    "any.required": "El campo cantidad es obligatorio.",
-    "number.min": "El campo cantidad debe ser al menos 1.",
+const numberSchema = joi.number().integer().min(1).optional().messages({
+    "number.base": "{#label} cantidad debe ser un número entero.",
+    "number.integer": "{#label} cantidad debe ser un número entero.",
+    "number.min": "{#label} cantidad debe ser al menos 1.",
+    "any.required": "{#label} cantidad es un campo obligatorio.",
   })
 
 const productoSchema = joi.object({
   productoId: idSchema,
-  talleId: numberSchema,
-  colorId: numberSchema,
+  talleId: numberSchema.label("talleId").required(),
+  colorId: numberSchema.label("colorId").required(),
   cantidad: numberSchema
 });
 
 const productoDeleteSchema = joi.object({
   productoId: idSchema,
-  talleId: numberSchema,
-  colorId: numberSchema
+  talleId: numberSchema.label("talleId").required(),
+  colorId: numberSchema.label("colorId").required()
 });
 
 const preFacturaProductoSchema = joi.object({

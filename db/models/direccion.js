@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       direccion: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: true
       },
       clienteId: {
@@ -30,15 +30,15 @@ module.exports = (sequelize, DataTypes) => {
       },
       codigoPostal: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
       },
       ciudad: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
       },
       provincia: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
       }
     },
     {

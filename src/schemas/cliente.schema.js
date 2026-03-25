@@ -9,42 +9,42 @@ const stringSchema = joi.string().min(1).messages({
 });
 
 const clienteSchema = genericSchema.keys({
-  telefono: stringSchema.required().pattern(/^\d{10}$/).label("teléfono").messages({
+  telefono: stringSchema.pattern(/^\d{10}$/).optional().label("teléfono").messages({
     "string.pattern.base": `"telefono" debe ser un número de 10 dígitos`,
   }),
-  direccion: stringSchema.required().label("dirección"),
-  codigoPostal: stringSchema.required().pattern(/^\d{4,5}$/).label("codigoPostal").messages({
+  direccion: stringSchema.optional().label("dirección"),
+  codigoPostal: stringSchema.pattern(/^\d{4,5}$/).optional().label("codigoPostal").messages({
     "string.pattern.base": `"codigoPostal" debe ser un número de 4 o 5 dígitos`,
   }),
-  ciudad: stringSchema.required().label("ciudad"),
-  provincia: stringSchema.required().label("provincia"),
-  cuit: stringSchema.required().pattern(/^\d{2}-\d{8}-\d{1}$/).label("cuit").messages({
+  ciudad: stringSchema.optional().label("ciudad"),
+  provincia: stringSchema.optional().label("provincia"),
+  cuit: stringSchema.pattern(/^\d{2}-\d{8}-\d{1}$/).optional().label("cuit").messages({
     "string.pattern.base": `"cuit" debe tener el formato XX-XXXXXXXX-X`
   }),
-  email: stringSchema.required().email().label("email").messages({
+  email: stringSchema.email().optional().label("email").messages({
     "string.email": `"email" debe ser una dirección de correo electrónico válida`,
   }),
-  nombreEmpresa: stringSchema.required().label("nombreEmpresa"),
-  condicionTributaria: stringSchema.required().label("condiciónTributaria"),
+  nombreEmpresa: stringSchema.optional().label("nombreEmpresa"),
+  condicionTributaria: stringSchema.optional().label("condiciónTributaria"),
 });
 
 const clienteUpdateSchema = joi.object({
-  nombre: stringSchema.label("nombre"),
-  telefono: stringSchema.pattern(/^\d{10}$/).label("teléfono").messages({
+  nombre: stringSchema.optional().label("nombre"),
+  telefono: stringSchema.pattern(/^\d{10}$/).optional().label("teléfono").messages({
     "string.pattern.base": `"telefono" debe ser un número de 10 dígitos`,
   }),
-  direccion: stringSchema.label("dirección"),
-  codigoPostal: stringSchema.pattern(/^\d{4,5}$/).label("codigoPostal").messages({
+  direccion: stringSchema.optional().label("dirección"),
+  codigoPostal: stringSchema.pattern(/^\d{4,5}$/).optional().label("codigoPostal").messages({
     "string.pattern.base": `"codigoPostal" debe ser un número de 4 o 5 dígitos`,
   }),
-  cuit: stringSchema.pattern(/^\d{2}-\d{8}-\d{1}$/).label("CUIT").messages({
+  cuit: stringSchema.pattern(/^\d{2}-\d{8}-\d{1}$/).optional().label("CUIT").messages({
     "string.pattern.base": `"cuit" debe tener el formato XX-XXXXXXXX-X`
   }),
-  email: stringSchema.email().label("email").messages({
+  email: stringSchema.email().optional().label("email").messages({
     "string.email": `"email" debe ser una dirección de correo electrónico válida`,
   }),
-  nombreEmpresa: stringSchema.label("nombreEmpresa"),
-  condicionTributaria: stringSchema.label("condiciónTributaria"),
+  nombreEmpresa: stringSchema.optional().label("nombreEmpresa"),
+  condicionTributaria: stringSchema.optional().label("condiciónTributaria"),
 })
 
 module.exports = { clienteSchema, clienteUpdateSchema };

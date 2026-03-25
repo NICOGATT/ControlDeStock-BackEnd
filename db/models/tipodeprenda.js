@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
   TipoDePrenda.init({
     nombre: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true
     }
   }, {
