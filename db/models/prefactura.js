@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
   PreFactura.init({
     fecha: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true
     },
     clienteId: {
       type: DataTypes.INTEGER,

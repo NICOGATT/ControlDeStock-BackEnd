@@ -47,11 +47,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       stock: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       precio: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
     },
     {

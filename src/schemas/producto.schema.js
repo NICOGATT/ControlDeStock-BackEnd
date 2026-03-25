@@ -19,17 +19,15 @@ const colorYTalleSchema = joi.object({
   talle: stringSchema.required().label("talle").messages({
     "any.required": "El campo talle es obligatorio",
   }),
-  cantidad: joi.number().integer().min(0).required().messages({
+  cantidad: joi.number().integer().min(0).optional().messages({
     "number.base": "La cantidad debe ser un número",
     "number.integer": "La cantidad debe ser un número entero",
     "number.min": "La cantidad debe ser al menos 0",
-    "any.required": "La cantidad es obligatoria",
   }),
-  precio: joi.number().integer().min(1).required().messages({
+  precio: joi.number().integer().min(1).optional().messages({
     "number.base": "El precio debe ser un número",
     "number.integer": "El precio debe ser un número entero",
     "number.min": "El precio debe ser al menos 1",
-    "any.required": "El campo precio es obligatorio",
   }),
 });
 
@@ -60,9 +58,7 @@ const productoSchema = joi.object({
   nombre: stringSchema.required().label("nombre").messages({
     "any.required": "El campo nombre es obligatorio",
   }),
-  tipoDePrenda: stringSchema.required().label("nombre").messages({
-    "any.required": "El campo nombre es obligatorio",
-  })
+  tipoDePrenda: stringSchema.optional().label("tipoDePrenda")
 });
 
 const productoUpdateSchema = joi.object({

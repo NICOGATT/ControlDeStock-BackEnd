@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       nombre: {
         type: DataTypes.STRING,
         unique: true,
-        allowNull: false,
+        allowNull: true,
       },
     },
     {
