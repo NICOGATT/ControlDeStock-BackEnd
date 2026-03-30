@@ -9,6 +9,10 @@ const validateDireccionUpdateSchema = genericValidator.validateSchema(direccionU
 const validateDireccionExists = async (req, res, next) => {
   const { clienteId, direccion } = req.body;
 
+  if (!direccion || !clienteId) {
+    return next(); // Skip validation if required fields are missing
+  }
+
   const direccionInstance = await Direccion.findOne({ where: { clienteId, direccion } });
 
   if (!direccionInstance) {
@@ -19,6 +23,10 @@ const validateDireccionExists = async (req, res, next) => {
 
 const validateDireccionNonExists = async (req, res, next) => {
   const { direccion } = req.body;
+
+  if (!direccion) {
+    return next(); // Skip validation if no direccion is provided
+  }
 
   const direccionInstance = await Direccion.findOne({ where: { direccion } });
 

@@ -21,8 +21,13 @@ const deleteModel = (Model) => async (req, res) => {
 
 //4. Obtener todos los registros
 const getAllModels = (Model) => async (req, res) => {
-  const entities = await Model.findAll();
-  return res.status(200).json(entities);
+  try {
+    const entities = await Model.findAll();
+    return res.status(200).json(entities);
+  } catch (error) {
+    console.error('Error en getAllModels:', error);
+    return res.status(500).json({ error: error.message });
+  }
 };
 
 //5. Obtener un registro por ID

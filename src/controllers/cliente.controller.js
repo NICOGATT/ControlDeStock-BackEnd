@@ -1,28 +1,42 @@
 const { Cliente, Direccion } = require('../../db/models');
 const genericController = require('./generic.controller');
+
 //1. Crear un nuevo cliente
 const createCliente = async (req, res) => {
-  const { nombre, telefono, cuit, email, nombreEmpresa, condicionTributaria, 
-    direccion, codigoPostal, ciudad, provincia } = req.body;
-  const newCliente = await Cliente.create({ 
-    nombre, 
-    telefono, 
-    cuit, 
-    email, 
-    nombreEmpresa, 
-    condicionTributaria 
-  });
-  const newDireccion = await Direccion.create({ 
-    direccion, 
-    clienteId: newCliente.id, 
-    codigoPostal, 
-    ciudad, 
-    provincia 
-  });
-  return res.status(201).json({
-    ...newCliente.toJSON(),
-    direccion: await newDireccion.toJSON()
-  });
+  try {
+    const { nombre, telefono, cuit, email, nombreEmpresa, condicionTributaria, 
+      direccion, codigoPostal, ciudad, provincia } = req.body;
+    
+    console.log('createCliente - Body:', req.body);
+    
+    const newCliente = await Cliente.create({ 
+      nombre, 
+      telefono, 
+      cuit, 
+      email, 
+      nombreEmpresa, 
+      condicionTributaria 
+    });
+    
+    if (direccion) {
+      const newDireccion = await Direccion.create({ 
+        direccion, 
+        clienteId: newCliente.id, 
+        codigoPostal, 
+        ciudad, 
+        provincia 
+      });
+      return res.status(201).json({
+        ...newCliente.toJSON(),
+        direccion: newDireccion.toJSON()
+      });
+    }
+    
+    return res.status(201).json(newCliente.toJSON());
+  } catch (error) {
+    console.error('Error en createCliente:', error);
+    return res.status(500).json({ error: error.message });
+  }
 }
 
 //2. Modificar un cliente existente
