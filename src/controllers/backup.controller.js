@@ -110,8 +110,8 @@ const createBackup = async (req, res) => {
     });
   }
 
-  // 6. Ejecutar mysqldump (sin --ssl-mode para MariaDB)
-  const mysqldumpCmd = `mysqldump -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} ${dbName} --result-file=${backupFile}`;
+  // 6. Ejecutar mysqldump (ssl-verify-server-cert=0 para self-signed certs)
+  const mysqldumpCmd = `mysqldump -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} ${dbName} --ssl-verify-server-cert=0 --result-file=${backupFile}`;
   console.log('Ejecutando:', mysqldumpCmd.replace(dbPassword, '***'));
 
   exec(mysqldumpCmd, (error, stdout, stderr) => {
@@ -262,7 +262,8 @@ const restoreBackup = (req, res) => {
           
           try {
             await new Promise((resolve, reject) => {
-              const testCmd = `mysqladmin ping -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword}`;
+              // MariaDB: --ssl-verify-server-cert=0 para ignorar self-signed certs
+              const testCmd = `mysqladmin ping -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} --ssl-verify-server-cert=0`;
               exec(testCmd, (err, stdout, stderr) => {
                 if (err) {
                   reject(err);
@@ -297,8 +298,8 @@ const restoreBackup = (req, res) => {
         });
       }
 
-      // 7. Ejecutar restauración (sin --ssl-mode para MariaDB)
-      const mysqlCmd = `mysql -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} ${dbName}`;
+      // 7. Ejecutar restauración (ssl-verify-server-cert=0 para self-signed certs)
+      const mysqlCmd = `mysql -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} --ssl-verify-server-cert=0 ${dbName}`;
       console.log('Ejecutando restore:', mysqlCmd.replace(dbPassword, '***'));
       
       const mysqlProc = exec(mysqlCmd, (error, stdout, stderr) => {
