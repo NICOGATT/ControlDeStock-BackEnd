@@ -82,7 +82,7 @@ const createBackup = async (req, res) => {
   // 5. Verificar conexión a MySQL primero
   const testConnection = () => {
     return new Promise((resolve, reject) => {
-      const testCmd = `mysqladmin ping -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} --ssl-verify-server-cert=0 --default-auth=mysql_native_password`;
+     const testCmd = `mysqladmin ping -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} --ssl-mode=DISABLED`;
       console.log('Probando conexión con:', testCmd.replace(dbPassword, '***'));
       
       exec(testCmd, (err, stdout, stderr) => {
@@ -111,7 +111,7 @@ const createBackup = async (req, res) => {
   }
 
   // 6. Ejecutar mysqldump con autenticación nativa para MySQL 8
-  const mysqldumpCmd = `mysqldump -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} --ssl-verify-server-cert=0 --default-auth=mysql_native_password ${dbName} --result-file=${backupFile}`;
+  const mysqldumpCmd = `mysqldump -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} --ssl-mode=DISABLED ${dbName} --result-file=${backupFile}`;
   console.log('Ejecutando:', mysqldumpCmd.replace(dbPassword, '***'));
 
   exec(mysqldumpCmd, (error, stdout, stderr) => {
@@ -200,7 +200,7 @@ const restoreBackup = (req, res) => {
   const dbPassword = process.env.DB_PASSWORD || 'root123';
   const dbName = process.env.DB_NAME || 'control_stock_db';
 
-  const mysqlCmd = `mysql -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} ${dbName}`;
+  const mysqlCmd = `mysql -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} --ssl-mode=DISABLED ${dbName}`;
   
   const mysqlProc = exec(mysqlCmd, (error, stdout, stderr) => {
     if (error) {
