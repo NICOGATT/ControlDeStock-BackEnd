@@ -110,8 +110,8 @@ const createBackup = async (req, res) => {
     });
   }
 
-  // 6. Ejecutar mysqldump con autenticación nativa para MySQL 8
-  const mysqldumpCmd = `mysqldump -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} --ssl-mode=DISABLED ${dbName} --result-file=${backupFile}`;
+  // 6. Ejecutar mysqldump (sin --ssl-mode para MariaDB)
+  const mysqldumpCmd = `mysqldump -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} ${dbName} --result-file=${backupFile}`;
   console.log('Ejecutando:', mysqldumpCmd.replace(dbPassword, '***'));
 
   exec(mysqldumpCmd, (error, stdout, stderr) => {
@@ -253,38 +253,52 @@ const restoreBackup = (req, res) => {
 
   checkMysql()
     .then(async () => {
-      // 6. Probar conexión antes de restaurar
-      const testConnection = () => {
-        return new Promise((resolve, reject) => {
-          const testCmd = `mysqladmin ping -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} --ssl-mode=DISABLED`;
-          console.log('Probando conexión con:', testCmd.replace(dbPassword, '***'));
+      // 6. Probar conexión antes de restaurar (con retry para esperar que MySQL esté listo)
+      const testConnectionWithRetry = async (maxRetries = 10, delayMs = 2000) => {
+        let lastError = null;
+        
+        for (let i = 1; i <= maxRetries; i++) {
+          console.log(`Intento ${i}/${maxRetries} de conexión a MySQL...`);
           
-          exec(testCmd, (err, stdout, stderr) => {
-            if (err) {
-              console.error('❌ Error de conexión MySQL:', err.message);
-              reject(err);
-            } else {
-              console.log('✓ Conexión a MySQL exitosa');
-              resolve();
+          try {
+            await new Promise((resolve, reject) => {
+              const testCmd = `mysqladmin ping -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword}`;
+              exec(testCmd, (err, stdout, stderr) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve();
+                }
+              });
+            });
+            console.log('✓ Conexión a MySQL exitosa');
+            return true;
+          } catch (err) {
+            lastError = err;
+            console.log(`  ❌ Intento ${i} falló: ${err.message}`);
+            if (i < maxRetries) {
+              await new Promise(r => setTimeout(r, delayMs));
             }
-          });
-        });
+          }
+        }
+        
+        throw lastError;
       };
 
       try {
-        await testConnection();
+        await testConnectionWithRetry();
       } catch (connErr) {
-        console.error('❌ No se puede conectar a MySQL:', connErr.message);
+        console.error('❌ No se puede conectar a MySQL después de varios intentos:', connErr.message);
         return res.status(500).json({ 
           mensaje: 'Error al restaurar el backup',
-          error: 'No se puede conectar a MySQL',
+          error: 'MySQL no disponible. Verificar que el contenedor de base de datos esté corriendo.',
           detail: connErr.message,
-          hint: 'Verificar DB_HOST, DB_PORT, DB_USER, DB_PASSWORD'
+          hint: 'Verificar DB_HOST, DB_PORT, DB_USER, DB_PASSWORD en docker-compose'
         });
       }
 
-      // 7. Ejecutar restauración
-      const mysqlCmd = `mysql -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} --ssl-mode=DISABLED ${dbName}`;
+      // 7. Ejecutar restauración (sin --ssl-mode para MariaDB)
+      const mysqlCmd = `mysql -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} ${dbName}`;
       console.log('Ejecutando restore:', mysqlCmd.replace(dbPassword, '***'));
       
       const mysqlProc = exec(mysqlCmd, (error, stdout, stderr) => {
