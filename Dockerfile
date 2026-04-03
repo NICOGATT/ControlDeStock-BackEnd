@@ -1,9 +1,9 @@
-FROM node:20-alpine
+FROM node:20
 
 WORKDIR /app
 
-# Instalar mysql-client ANTES de cualquier otra cosa
-RUN apk add --no-cache mysql-client
+# Instalar MySQL client (no MariaDB) para compatibilidad con MySQL 8
+RUN apt-get update && apt-get install -y default-mysql-client && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
 
