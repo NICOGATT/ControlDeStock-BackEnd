@@ -183,43 +183,147 @@ const downloadBackup = (req, res) => {
 };
 
 const restoreBackup = (req, res) => {
+  console.log('=== INICIO RESTORE BACKUP ===');
   const backupDir = req.backupDir;
   const backupFileName = req.backupFileName;
   const backupFile = path.join(backupDir, backupFileName);
 
-  let sqlContent = fs.readFileSync(backupFile, 'utf8');
+  console.log('backupDir:', backupDir);
+  console.log('backupFileName:', backupFileName);
+  console.log('backupFile:', backupFile);
 
+  // 1. Verificar que el archivo existe
+  if (!fs.existsSync(backupFile)) {
+    console.error('❌ Archivo de backup no encontrado:', backupFile);
+    return res.status(404).json({ 
+      mensaje: 'Error al restaurar el backup',
+      error: 'Archivo de backup no encontrado'
+    });
+  }
+
+  // 2. Leer el archivo SQL
+  let sqlContent;
+  try {
+    sqlContent = fs.readFileSync(backupFile, 'utf8');
+    console.log('✓ Archivo leído, tamaño:', sqlContent.length, 'bytes');
+  } catch (readErr) {
+    console.error('❌ Error al leer archivo:', readErr.message);
+    return res.status(500).json({ 
+      mensaje: 'Error al restaurar el backup',
+      error: 'No se pudo leer el archivo de backup',
+      detail: readErr.message
+    });
+  }
+
+  // 3. Filtrar líneas problemáticas (GTID)
+  const originalLines = sqlContent.split('\n').length;
   sqlContent = sqlContent
     .split('\n')
     .filter(line => !line.includes('GTID_PURGED') && !line.includes('GTID_EXECUTED'))
     .join('\n');
+  const filteredLines = sqlContent.split('\n').length;
+  console.log('✓ Líneas procesadas:', originalLines, '->', filteredLines);
 
+  // 4. Configurar conexión MySQL
   const dbHost = process.env.DB_HOST || 'mysql';
   const dbPort = process.env.DB_PORT || '3306';
   const dbUser = process.env.DB_USER || 'root';
   const dbPassword = process.env.DB_PASSWORD || 'root123';
   const dbName = process.env.DB_NAME || 'control_stock_db';
 
-  const mysqlCmd = `mysql -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} --ssl-mode=DISABLED ${dbName}`;
-  
-  const mysqlProc = exec(mysqlCmd, (error, stdout, stderr) => {
-    if (error) {
-      console.error('Error en restauración:', error);
+  console.log('Configuración MySQL:');
+  console.log('  Host:', dbHost);
+  console.log('  Port:', dbPort);
+  console.log('  User:', dbUser);
+  console.log('  DB:', dbName);
+
+  // 5. Verificar que mysql está disponible
+  const checkMysql = () => {
+    return new Promise((resolve, reject) => {
+      exec('which mysql', (err, stdout, stderr) => {
+        if (stdout.trim()) {
+          console.log('✓ mysql encontrado en PATH:', stdout.trim());
+          resolve('mysql');
+        } else {
+          reject(new Error('mysql no encontrado en PATH'));
+        }
+      });
+    });
+  };
+
+  checkMysql()
+    .then(async () => {
+      // 6. Probar conexión antes de restaurar
+      const testConnection = () => {
+        return new Promise((resolve, reject) => {
+          const testCmd = `mysqladmin ping -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} --ssl-mode=DISABLED`;
+          console.log('Probando conexión con:', testCmd.replace(dbPassword, '***'));
+          
+          exec(testCmd, (err, stdout, stderr) => {
+            if (err) {
+              console.error('❌ Error de conexión MySQL:', err.message);
+              reject(err);
+            } else {
+              console.log('✓ Conexión a MySQL exitosa');
+              resolve();
+            }
+          });
+        });
+      };
+
+      try {
+        await testConnection();
+      } catch (connErr) {
+        console.error('❌ No se puede conectar a MySQL:', connErr.message);
+        return res.status(500).json({ 
+          mensaje: 'Error al restaurar el backup',
+          error: 'No se puede conectar a MySQL',
+          detail: connErr.message,
+          hint: 'Verificar DB_HOST, DB_PORT, DB_USER, DB_PASSWORD'
+        });
+      }
+
+      // 7. Ejecutar restauración
+      const mysqlCmd = `mysql -h ${dbHost} -P ${dbPort} -u ${dbUser} -p${dbPassword} --ssl-mode=DISABLED ${dbName}`;
+      console.log('Ejecutando restore:', mysqlCmd.replace(dbPassword, '***'));
+      
+      const mysqlProc = exec(mysqlCmd, (error, stdout, stderr) => {
+        console.log('=== RESULTADO RESTORE ===');
+        console.log('stdout:', stdout);
+        console.log('stderr:', stderr);
+        console.log('error:', error);
+
+        if (error) {
+          console.error('❌ Error en restauración:', error.message);
+          console.error('   code:', error.code);
+          console.error('   stderr:', stderr);
+          return res.status(500).json({ 
+            mensaje: 'Error al restaurar el backup',
+            error: error.message,
+            stderr: stderr,
+            hint: 'Verificar que el archivo SQL sea válido'
+          });
+        }
+
+        console.log('✓ Backup restaurado exitosamente');
+        res.status(200).json({
+          mensaje: 'Backup restaurado exitosamente',
+          archivo: backupFileName,
+          fecha: new Date()
+        });
+      });
+
+      mysqlProc.stdin.write(sqlContent);
+      mysqlProc.stdin.end();
+    })
+    .catch((err) => {
+      console.error('❌ mysql no disponible:', err.message);
       return res.status(500).json({ 
         mensaje: 'Error al restaurar el backup',
-        error: error.message 
+        error: 'mysql no está disponible en el contenedor',
+        detail: err.message
       });
-    }
-
-    res.status(200).json({
-      mensaje: 'Backup restaurado exitosamente',
-      archivo: backupFileName,
-      fecha: new Date()
     });
-  });
-
-  mysqlProc.stdin.write(sqlContent);
-  mysqlProc.stdin.end();
 };
 
 module.exports = {
