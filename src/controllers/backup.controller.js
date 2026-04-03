@@ -215,14 +215,19 @@ const restoreBackup = (req, res) => {
     });
   }
 
-  // 3. Filtrar líneas problemáticas (GTID)
+  // 3. Filtrar líneas problemáticas (GTID) y agregar FK checks
   const originalLines = sqlContent.split('\n').length;
   sqlContent = sqlContent
     .split('\n')
     .filter(line => !line.includes('GTID_PURGED') && !line.includes('GTID_EXECUTED'))
     .join('\n');
-  const filteredLines = sqlContent.split('\n').length;
-  console.log('✓ Líneas procesadas:', originalLines, '->', filteredLines);
+
+  // Agregar Disable Foreign Key Checks al inicio y Enable al final
+  const fkDisable = 'SET FOREIGN_KEY_CHECKS=0;\n';
+  const fkEnable = '\nSET FOREIGN_KEY_CHECKS=1;';
+  sqlContent = fkDisable + sqlContent + fkEnable;
+  
+  console.log('✓ FK checks agregados - Líneas procesadas:', originalLines);
 
   // 4. Configurar conexión MySQL
   const dbHost = process.env.DB_HOST || 'mysql';
