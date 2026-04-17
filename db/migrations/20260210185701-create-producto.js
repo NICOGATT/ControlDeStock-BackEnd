@@ -24,6 +24,11 @@ module.exports = {
           key: 'id'
         },
       },
+      codigoBarras: {
+        type: Sequelize.STRING,
+        allowNull: true,
+        unique: true
+      },
     });
   },
   async down(queryInterface, Sequelize) {

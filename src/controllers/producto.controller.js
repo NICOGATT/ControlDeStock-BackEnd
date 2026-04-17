@@ -15,10 +15,11 @@ const crearStock = async (modeloColor, valorColor, modeloTalle, valorTalle, prod
 };
 
 const createProducto = async (req, res) => {
-  const { colorYTalle, nombre, id } = req.body;
+  const { colorYTalle, nombre, id, codigoBarras } = req.body;
   const newProducto = await Producto.create({
     id,
     nombre,
+    codigoBarras,
   });
 
   const promesas = colorYTalle.map(async (item) => {
@@ -32,6 +33,7 @@ const createProducto = async (req, res) => {
   }).then(([tipo]) => newProducto.setTipoDePrenda(tipo));
 
   const responseProducto = await Producto.findByPk(newProducto.id, {
+      attributes: ["id", "nombre", "codigoBarras"],
       include: [
         {
           model: StockProducto,
@@ -52,7 +54,7 @@ const createProducto = async (req, res) => {
 //2. Actualizar un producto por su ID
 const updateProducto = async (req, res) => {
   const { id } = req.params;
-  const { nombre, tipoDePrenda } = req.body;
+  const { nombre, tipoDePrenda, codigoBarras } = req.body;
   const producto = await Producto.findByPk(id);
   
   if (tipoDePrenda){
@@ -61,13 +63,14 @@ const updateProducto = async (req, res) => {
   }
   
   await Producto.update({ 
-    nombre
+    nombre,
+    codigoBarras
   }, 
     { where: { id } }
   );
 
   const responseProducto = await Producto.findByPk(id, {
-    attributes: ["id", "nombre"],
+    attributes: ["id", "nombre", "codigoBarras"],
     include: [
       { model: TipoDePrenda, as: "tipoDePrenda" },
     ],
@@ -82,7 +85,7 @@ const deleteModel = genericControllers.deleteModel(Producto);
 //4. Obtener todos los productos
 const getAllProductos = async (_, res) => {
   const productos = await Producto.findAll({
-    attributes: ["id", "nombre"],
+    attributes: ["id", "nombre", "codigoBarras"],
     include: [
       {
         model: StockProducto,
@@ -103,7 +106,7 @@ const getAllProductos = async (_, res) => {
 const getProductoById = async (req, res) => {
   const { id } = req.params;
   const producto = await Producto.findByPk(id, {
-    attributes: ["id", "nombre"],
+    attributes: ["id", "nombre", "codigoBarras"],
     include: [
       {
         model: StockProducto,
@@ -125,7 +128,29 @@ const getProductoByName = async (req, res) => {
   const { nombre } = req.params;
   const producto = await Producto.findOne({
     where: { nombre },
-    attributes: ["id", "nombre"],
+    attributes: ["id", "nombre", "codigoBarras"],
+    include: [
+      {
+        model: StockProducto,
+        as: "stockProductos",
+        attributes: ["stock", "precio"],
+        include: [
+          { model: Color, as: "color", attributes: ["nombre"] },
+          { model: Talle, as: "talle", attributes: ["nombre"] },
+        ],
+      },
+      { model: TipoDePrenda, as: "tipoDePrenda" },
+    ],
+  });
+  return res.status(200).json(producto);
+};
+
+//7. Buscar un producto por código de barras
+const getProductoByCodigoBarras = async (req, res) => {
+  const { codigoBarras } = req.params;
+  const producto = await Producto.findOne({
+    where: { codigoBarras },
+    attributes: ["id", "nombre", "codigoBarras"],
     include: [
       {
         model: StockProducto,
@@ -149,4 +174,5 @@ module.exports = {
   getAllProductos,
   getProductoById,
   getProductoByName,
+  getProductoByCodigoBarras,
 };
