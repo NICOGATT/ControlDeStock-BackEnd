@@ -6,7 +6,9 @@ const {
   validateProductoById,
   validateProductoName,
   validateProductoByName,
-  validateProductId
+  validateProductoByCodigoBarras,
+  validateProductId,
+  validateProductoByIdBody
 } = require("../middlewares/producto.middleware");
 const {
   createProducto,
@@ -14,7 +16,8 @@ const {
   deleteModel,
   getAllProductos,
   getProductoById,
-  getProductoByName
+  getProductoByName,
+  getProductoByCodigoBarras
 } = require("../controllers/producto.controller");
 /**
  * @swagger
@@ -29,12 +32,17 @@ const {
  *       properties:
  *         id:
  *           type: string
- *           description: ID único del producto con formato RPPRO XX-XX
+ *           description: ID único del producto
  *           example: "RPPRO 01-23"
  *         nombre:
  *           type: string
  *           description: Nombre del producto
  *           example: "Remera básica"
+ *         codigoBarras:
+ *           type: string
+ *           nullable: true
+ *           description: Código de barras del producto
+ *           example: "7894567890123"
  *         tipoDePrendaId:
  *           type: string
  *           nullable: true
@@ -63,12 +71,16 @@ const {
  *             properties:
  *               id:
  *                 type: string
- *                 description: ID único del producto con formato RPPRO XX-XX
- *                 example: "RPPRO 01-23"
+ *                 description: ID único del producto
+ *                 example: "PROD001"
  *               nombre:
  *                 type: string
  *                 description: Nombre del producto
  *                 example: "Remera básica"
+ *               codigoBarras:
+ *                 type: string
+ *                 description: Código de barras del producto
+ *                 example: "7894567890123"
  *               colorYTalle:
  *                 type: array
  *                 description: Lista de combinaciones de colores y talles
@@ -101,15 +113,16 @@ const {
  *                 description: Tipo de prenda del producto
  *                 example: "Camisa"
  *           example:
- *             id: "RPPRO 01-23"
+ *             id: "PROD001"
  *             nombre: "Remera básica"
+ *             codigoBarras: "7894567890123"
  *             colorYTalle:
  *               - color: "Rojo"
  *                 talle: "M"
  *                 cantidad: 50
  *                 precio: 1200
  *               - color: "Azul"
- *                 talle: "L"
+ *                 talle: "XL"
  *                 cantidad: 30
  *                 precio: 1100
  *             tipoDePrenda: "Camisa"
@@ -121,8 +134,9 @@ const {
  *             schema:
  *               $ref: '#/components/schemas/Producto'
  *             example:
- *               id: "RPPRO 01-23"
+ *               id: "PROD001"
  *               nombre: "Remera básica"
+ *               codigoBarras: "7894567890123"
  *               stockProductos:
  *                 - stock: 50
  *                   precio: 1200
@@ -135,7 +149,7 @@ const {
  *                   color:
  *                     nombre: "Azul"
  *                   talle:
- *                     nombre: "L"
+ *                     nombre: "XL"
  *               tipoDePrenda:
  *                 id: 1
  *                 nombre: "Camisa"
@@ -175,9 +189,9 @@ router.post("/",
  *         name: id
  *         schema:
  *           type: string
- *           description: ID único del producto con formato RPPRO XX-XX
+ *           description: ID único del producto
  *         required: true
- *         example: "RPPRO 01-23"
+ *         example: "PROD001"
  *     requestBody:
  *       required: true
  *       content:
@@ -186,6 +200,7 @@ router.post("/",
  *             $ref: '#/components/schemas/Producto'
  *           example:
  *             nombre: "Remera"
+ *             codigoBarras: "7894567890456"
  *             tipoDePrenda: "Remera doble"
  *     responses:
  *       200:
@@ -195,8 +210,9 @@ router.post("/",
  *             schema:
  *               $ref: '#/components/schemas/Producto'
  *             example:
- *               id: "RPPRO 01-23"
+ *               id: "PROD001"
  *               nombre: "Remera"
+ *               codigoBarras: "7894567890456"
  *               tipoDePrenda:
  *                 id: 2
  *                 nombre: "Remera doble"
@@ -243,9 +259,9 @@ router.put(
  *         name: id
  *         schema:
  *           type: string
- *           description: ID único del producto con formato RPPRO XX-XX
+ *           description: ID único del producto
  *         required: true
- *         example: "RPPRO 01-23"
+ *         example: "PROD001"
  *     responses:
  *       204:
  *         description: Producto eliminado exitosamente
@@ -278,26 +294,9 @@ router.delete("/:id",
  *               items:
  *                 $ref: '#/components/schemas/Producto'
  *             example:
- *               - id: "RPPRO 01-22"
- *                 nombre: "Remera básia"
- *                 stockProductos:
- *                   - stock: 30
- *                     precio: 1100
- *                     color:
- *                       nombre: "Azul"
- *                     talle:
- *                       nombre: "L"
- *                   - stock: 50
- *                     precio: 1200
- *                     color:
- *                       nombre: "Rojo"
- *                     talle:
- *                       nombre: "M"
- *                 tipoDePrenda:
- *                   id: 1
- *                   nombre: "Camisa"
- *               - id: "RPPRO 01-23"
+ *               - id: "PROD001"
  *                 nombre: "Remera básica"
+ *                 codigoBarras: "7894567890123"
  *                 stockProductos:
  *                   - stock: 30
  *                     precio: 1100
@@ -314,6 +313,25 @@ router.delete("/:id",
  *                 tipoDePrenda:
  *                   id: 1
  *                   nombre: "Camisa"
+ *               - id: "PROD002"
+ *                 nombre: "Pantalón básico"
+ *                 codigoBarras: "7894567890456"
+ *                 stockProductos:
+ *                   - stock: 30
+ *                     precio: 1100
+ *                     color:
+ *                       nombre: "Negro"
+ *                     talle:
+ *                       nombre: "S"
+ *                   - stock: 50
+ *                     precio: 1200
+ *                     color:
+ *                       nombre: "Azul"
+ *                     talle:
+ *                       nombre: "XL"
+ *                 tipoDePrenda:
+ *                   id: 2
+ *                   nombre: "Pantalón"
  */
 router.get("/", getAllProductos);
 
@@ -329,9 +347,9 @@ router.get("/", getAllProductos);
  *         name: id
  *         schema:
  *           type: string
- *           description: ID único del producto con formato RPPRO XX-XX
+ *           description: ID único del producto
  *         required: true
- *         example: "RPPRO 01-23"
+ *         example: "PROD001"
  *     responses:
  *       200:
  *         description: Producto obtenido exitosamente
@@ -340,8 +358,9 @@ router.get("/", getAllProductos);
  *             schema:
  *               $ref: '#/components/schemas/Producto'
  *             example:
- *               id: "RPPRO 01-23"
+ *               id: "PROD001"
  *               nombre: "Remera básica"
+ *               codigoBarras: "7894567890123"
  *               stockProductos:
  *                 - stock: 50
  *                   precio: 1200
@@ -354,7 +373,7 @@ router.get("/", getAllProductos);
  *                   color:
  *                     nombre: "Azul"
  *                   talle:
- *                     nombre: "L"
+ *                     nombre: "XL"
  *               tipoDePrenda:
  *                 id: 1
  *                 nombre: "Camisa"
@@ -392,8 +411,9 @@ router.get("/:id",
  *             schema:
  *               $ref: '#/components/schemas/Producto'
  *             example:
- *               id: "RPPRO 01-23"
+ *               id: "PROD001"
  *               nombre: "Remera básica"
+ *               codigoBarras: "7894567890123"
  *               stockProductos:
  *                 - stock: 50
  *                   precio: 1200
@@ -406,7 +426,7 @@ router.get("/:id",
  *                   color:
  *                     nombre: "Azul"
  *                   talle:
- *                     nombre: "L"
+ *                     nombre: "XL"
  *               tipoDePrenda:
  *                 id: 1
  *                 nombre: "Camisa"
@@ -420,5 +440,59 @@ router.get("/:id",
 router.get("/nombre/:nombre", 
   validateProductoByName, 
   getProductoByName
+);
+
+//7. Buscar un producto por código de barras VERIFICADO SWAGGER DOCUMENTADO
+/**
+ * @swagger
+ * /api/productos/codigo-barras/{codigoBarras}:
+ *   get:
+ *     summary: Buscar un producto por código de barras
+ *     tags: [Productos]
+ *     parameters:
+ *       - in: path
+ *         name: codigoBarras
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Código de barras del producto a buscar
+ *         example: "7894567890123"
+ *     responses:
+ *       200:
+ *         description: Producto obtenido exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Producto'
+ *             example:
+ *               id: "PROD001"
+ *               nombre: "Remera básica"
+ *               codigoBarras: "7894567890123"
+ *               stockProductos:
+ *                 - stock: 50
+ *                   precio: 1200
+ *                   color:
+ *                     nombre: "Rojo"
+ *                   talle:
+ *                     nombre: "M"
+ *                 - stock: 30
+ *                   precio: 1100
+ *                   color:
+ *                     nombre: "Azul"
+ *                   talle:
+ *                     nombre: "XL"
+ *               tipoDePrenda:
+ *                 id: 1
+ *                 nombre: "Camisa"
+ *       404:
+ *         description: No se encontró el producto con ese código de barras
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Producto con codigoBarras 7894567890123 no existe"
+ */
+router.get("/codigo-barras/:codigoBarras", 
+  validateProductoByCodigoBarras, 
+  getProductoByCodigoBarras
 );
 module.exports = router;

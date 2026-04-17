@@ -6,9 +6,14 @@ const stringSchema = joi.string().min(1).messages({
   "string.min": "El campo debe tener al menos 1 caracter",
 });
 
+<<<<<<< HEAD
 const idSchema = stringSchema.pattern(/^(RPPRO|RPM) \d{2}-\d{2}$/).required().label("id").messages(
     {
       "string.pattern.base": "El id debe seguir el formato RPPRO XX-XX o RPM XX-XX, donde XX son números",
+=======
+const idSchema = stringSchema.required().label("id").messages(
+    {
+>>>>>>> NahuLJ/main
       "any.required": "El campo id es obligatorio",
     }
   )
@@ -58,12 +63,18 @@ const productoSchema = joi.object({
   nombre: stringSchema.required().label("nombre").messages({
     "any.required": "El campo nombre es obligatorio",
   }),
-  tipoDePrenda: stringSchema.optional().label("tipoDePrenda")
+  tipoDePrenda: stringSchema.optional().label("tipoDePrenda"),
+  codigoBarras: stringSchema.optional().label("codigoBarras")
+});
+
+const codigoBarrasSchema = stringSchema.required().label("codigoBarras").messages({
+  "any.required": "El campo codigoBarras es obligatorio",
 });
 
 const productoUpdateSchema = joi.object({
-  nombre: stringSchema.label("nombre"),
-  tipoDePrenda: stringSchema.label("tipoDePrenda")
+  nombre: stringSchema.optional().label("nombre"),
+  tipoDePrenda: stringSchema.optional().label("tipoDePrenda"),
+  codigoBarras: stringSchema.optional().label("codigoBarras")
 })
 
-module.exports = { productoUpdateSchema, productoSchema, colorYTalleSchema, idSchema };
+module.exports = { productoUpdateSchema, productoSchema, colorYTalleSchema, idSchema, codigoBarrasSchema };
